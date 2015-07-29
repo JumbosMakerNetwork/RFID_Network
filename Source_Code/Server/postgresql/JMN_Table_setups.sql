@@ -38,8 +38,7 @@ CREATE TABLE locations (
     Prim_users      integer
     );
 
-INSERT INTO locations VALUES (default, 'Jumbo''s Maker Studio', 'Test information blah blah blah', 
-    '200 Boston Ave Suite G810 Medford MA 02155', default);
+INSERT INTO locations VALUES (default, 'Jumbo''s Maker Studio', 'Test information blah blah blah', '200 Boston Ave Suite G810 Medford MA 02155', default);
 
 CREATE TABLE stations (
     SID            serial PRIMARY KEY,
@@ -56,15 +55,14 @@ CREATE TABLE stations (
     Notes           text
     );
 
-INSERT INTO stations VALUES (default, 'laser', '40 Watt Zing 24', 1, default, default, default, default, 
-    default, default, default, default);
+INSERT INTO stations VALUES (default, 'laser', '40 Watt Zing 24', 1, default, default, default, default, default, default, default, default);
 
 CREATE TABLE permissions (
     SID         integer REFERENCES stations (SID),
     UID         integer REFERENCES users (UID),
-    access      boolean,
+    access      boolean default false,
     reg_date    date,
-    exp_date    date,
+    exp_date    date, -- This needs to be calculated at registration, probably in the php
     luse        timestamp without time zone, --Last time used
     uses        integer DEFAULT 0,
     time_used   interval hour to second DEFAULT '0 days 0:00:00',
