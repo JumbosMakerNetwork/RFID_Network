@@ -1,20 +1,11 @@
-# CEEO Makerspace Data Collection
-This project is an RFID tag and arduino based system for tracking use in a makerspace while also integrating automated safety interlocks through use of data and power relays. 
-
-This includes the firmware and hardware files for the system.
-
-CURRENTLY THIS IS IN DEVELOPMENT!!! So if you stumble across this, don't hate us if it doesn't work and feel free to comment to help out if you have some useful feedback.
-
+# CEEO Makerspace Data Collection - Server
 
 ## Description
-This is the source code for the Makerspace RFID system. The current version allows ____.
+These are all the files for setting up the postgresql database tables and the webpages for interacting with that database.
 
 
 ## To Dos
-- ~~ Finalize all programs ~~
-- ~~ Add server documentation ~~
-- ~~ Add hardware schematics and drawings ~~
-- ~~ Test and debug ~~
+- ~~ Finish the to do list ~~
 
 ## Notes
 
