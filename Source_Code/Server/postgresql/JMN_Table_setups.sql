@@ -29,6 +29,8 @@ CREATE TABLE users (
     );
 
 INSERT INTO users VALUES (default, 'Testuser7', 'Test', 'User', 'testuser7@gmail.com', 'tuser7@tufts.edu', default, default, default, 19, 2017, 1990, default, default, 3, default);
+INSERT INTO users VALUES (default, 'Johnathan', 'Doe', 'JDoe', 'JohnDoe@gmail.com', 'Johnathan.Doe@tufts.edu', default, default, default, 19, 2017, 1990, default, default, 3, default);
+
 
 CREATE TABLE locations (
     LID             serial PRIMARY KEY,
@@ -69,7 +71,7 @@ CREATE TABLE permissions (
     Notes       text
     );
 
-INSERT INTO permissions VALUES (1, 1, true, CURRENT_DATE, CURRENT_DATE, CURRENT_TIMESTAMP, 0, default);
+INSERT INTO permissions VALUES (1, 13, true, CURRENT_DATE, CURRENT_DATE, CURRENT_TIMESTAMP, 0, default);
 
 CREATE TABLE usage_log(
     log         serial PRIMARY KEY,
@@ -78,7 +80,8 @@ CREATE TABLE usage_log(
     SID         integer REFERENCES stations (SID),
     req_type    integer, -- 1 is an ask and a 2 is a tell
     response    text, -- usually boolean but sometimes N/A
-    info        text
+    info        text,
+    IP          inet -- Need to occassionally spot check for erroneous logs.
     );
 
 INSERT INTO usage_log VALUES (default, default, 1, 1, 1, 'true', default);
@@ -88,7 +91,8 @@ CREATE TABLE Admin_log(
     time        timestamp default current_timestamp,
     UID         integer REFERENCES users (UID),
     action      text,
-    Notes       text
+    Notes       text,
+    IP          inet -- Need to occassionally spot check for erroneous logs.
     );
 
 INSERT INTO Admin_log VALUES (default, default, 1, 'database check', default);
@@ -132,7 +136,7 @@ GRANT USAGE ON sequence usage_log_log_seq TO jumbo;
 GRANT USAGE ON sequence Admin_log_log_seq TO jadmin;
 
 
--- For simplifying data handling 
+-- For simplifying data handling by assigning int codes
 
 CREATE TABLE departments(
     deptid      serial PRIMARY KEY,
