@@ -21,24 +21,28 @@ const char DBIP[] = "130.64.17.0";
 #define RST_PIN   5   // 
 #define SS_PIN    10  // 
 
+////  RFID Inits ////////////
+/////////////////////////////
 int successRead = 0;
-
 // RFID_UID will be stored and sent as a hex string
 String RFID_UID;
-
 MFRC522 RFID(SS_PIN, RST_PIN);  // Create mfrc522 instance
 MFRC522::MIFARE_Key key;
 
-///// Apparently this was unnecessary, having been created within SparkFunESP8266WiFi.h
-// SoftwareSerial ESP8266(8, 9);   // D8 -> ESP8266 RX, D9 -> ESP8266 TX (Set by Sparkfun Shield)
+//// Hardware assignments /////
+///////////////////////////////
 SoftwareSerial LCD(3,2);        // D2 -> LCD TX, D3 -> LCD RX (unused)
+int redLED = 6;
+int greenLED = 7;
 
 
 void setup() {
+  pinMode(redLED, OUTPUT);
+  pinMode(greenLED, OUTPUT);
 
   // Initialize Serial Communications
-  Serial.begin(9600);   // with the PC for debugging //displays
-  LCD.begin(9600);      // With the LCD for external //displays
+  Serial.begin(9600);   // with the PC for debugging displays
+  LCD.begin(9600);      // With the LCD for external displays
 
   // Check and set up the wifi connection
   initializeESP8266();
@@ -46,7 +50,7 @@ void setup() {
   ///// !!! The following could probably be thrown into a single function in case
   ///// !!! signal is lost at some point. FOr now it's fine here thgouh. 
   Serial.println(F("connecting now "));
-  //display("Connecting to", "     Wifi...");
+  display("Connecting to", "     Wifi...");
 
   int retVal =0;
   Serial.println(F("init retval"));
@@ -55,16 +59,16 @@ void setup() {
   if (retVal < 0)
     {
       Serial.println(F("Error connecting: "));
-      //display("Error - reset","device");
+      display("Error - reset","device");
       while(1);
     }
   else
   { 
     Serial.println(F("retval successful"));
-    //display("Successfully", "Connected!");
+    display("Successfully", "Connected!");
   }
   delay(1000);
-  //display("Waiting for", "RFID card..");
+  display("Waiting for", "RFID card..");
   delay(1000);
 
 
@@ -101,46 +105,71 @@ void loop() {
 
   //!! Red light should go on now, green light will go on once permissions is given.
 
-  //display("","");
-  //display("RFID", "Detected!");
+  display("","");
+  display("RFID", "Detected!");
   delay(100);
 
   Serial.print(F("debug 2:"));
   Serial.print(F("Card UID:"));
   RFID_UID = GetRFID(RFID.uid.uidByte, RFID.uid.size);
   
-  Serial.println(F("Halting PICC and stopping crypto"));
   RFID.PICC_HaltA();       // Halt PICC
   RFID.PCD_StopCrypto1();  // Stop encryption on PCD
 
   Serial.println(String(RFID_UID));
 
-  int req = 3; // Req type is consistently 3 for Sign IN/OUT stations.
-  String info = "Sign In or Out"; // Info constant for Sign IN/OUT stations.
+  String req = "3"; // Req type is consistently 3 for Sign IN/OUT stations.
+                    // **** string bc of arguments ReqJMN takes.
+
+  String info = "SignIn"; // Info constant for Sign IN/OUT stations.
   // // ping the database
   String resp = ReqJMN(String(RFID_UID), req, info);
   // Serial.println(F("Database updated"));
+  Serial.println("resp = ");
   Serial.println(resp);
   Serial.println("\n");
+  Serial.println(resp[0]);
+
 
   // Need to parse through 'resp' here to grab the permission and the first 
   // name to display. 
   String fname = resp.substring(2);
 
-  if (resp.charat(0)== 'T')
+  // **** changed to [] notation from 'charat(0)', which i've never seen before
+  if (resp[0]== 'T')
   {
     // Turn on the green light for a second
     // Display a welcome message using 'fname'
+    digitalWrite(greenLED, HIGH);
+    delay(1000); 
+    digitalWrite(greenLED, LOW);  
   }
-  else if (resp.charat(0) == 'F')
+  else if (resp[0] == 'F')
   {
+
     // Blink the red light for a few seconds and give a 
     // warning message, maybe say get approved at maker.tufts.edu
+
+    display("Insufficient","credentials");
+    for(int i = 0; i<4; i++){
+      digitalWrite(redLED, HIGH);  
+      delay(1000); 
+      digitalWrite(redLED, LOW);
+      delay(1000);   
+    }
+
   }
-  else if (resp.charat(0) == 'E')
+  else if (resp[0] == 'E')
   {
     // Blink the red light and give an error message.
     // Display a warning to get a staff member. 
+    display("Error","Get staff");
+    while(1){
+      digitalWrite(redLED, HIGH);  
+      delay(1000); 
+      digitalWrite(redLED, LOW);
+      delay(1000);
+    }
   }
 
   reinitialize();  
@@ -177,38 +206,15 @@ String GetRFID(byte *buffer, byte bufferSize) {
   String tmp = "";
   String tmp2;
   for (byte i = 0; i < bufferSize; i++) {
-    Serial.println("Byte: "+String(i));
     tmp2 = "";
     tmp2 += String(buffer[i] < 0x10 ? "0" : "");
     tmp2 += String(buffer[i], HEX);
     tmp = tmp2 + tmp;
   }
-  Serial.println("debug4");
   tmp.toUpperCase();
-  Serial.println(tmp);
-  // Serial.print("\t");
-  // Serial.println(hexToDec(tmp));
   return tmp;
 }
 
-//////////!!!! Not robust enough. It's thrown out junk a few too many time and I can
-//////////!!!! more easily handle conversion on the php side. It's much simpler there
-//////////!!!! and can be handled with a single command instead of taking up space here.
-
-// Convert a hex string to a long int
-// long int hexToDec(String hexString) {
-//   Serial.println(F(""));
-//   long int decValue = 0;
-//   int nextInt;
-//   for (int i = 0; i < hexString.length(); i++) {
-//     nextInt = int(hexString.charAt(i));
-//     if (nextInt >= 48 && nextInt <= 57) nextInt = map(nextInt, 48, 57, 0, 9);
-//     if (nextInt >= 65 && nextInt <= 70) nextInt = map(nextInt, 65, 70, 10, 15);
-//     if (nextInt >= 97 && nextInt <= 102) nextInt = map(nextInt, 97, 102, 10, 15);
-//     decValue = (decValue * 16) + nextInt;
-//   }
-//   return decValue;
-// }
 
 ////////////////////////////////////////////////////////////////////////
 /////////////////////// WIFI / DATABASE UTILITIES //////////////////////
@@ -223,7 +229,7 @@ boolean initializeESP8266()
   if (test != true)
   {
     Serial.println(F("Error talking to ESP8266."));
-    //display("pls reset","");
+    display("pls reset","");
   }
   
   Serial.println(F("ESP8266 Shield Present"));
@@ -244,6 +250,13 @@ boolean initializeESP8266()
   }
   Serial.println(F("Mode set to station"));
 
+  //blink leds once
+  digitalWrite(greenLED, HIGH);
+  digitalWrite(redLED, HIGH);
+  delay(1000); 
+  digitalWrite(greenLED, LOW);  
+  digitalWrite(redLED, LOW);  
+
   return true;
 }
 
@@ -256,13 +269,13 @@ String ReqJMN(String RFID1, String req, String info)
   int retVal = JMN.connect(DBIP, 80); // Connect to sparkfun (HTTP port)
   if (retVal <= 0) {
     Serial.println(F("Could not connect"));
-    //display("Could not","connect.");
+    display("Could not","connect.");
     delay(1000);
     return "Error";
   }
 
   Serial.println(F("Successfully connected!"));
-  //display("Successfully","connected!");
+  display("Successfully","connected!");
   delay(250);
   // Use the RFID.php page. I'd rather everything go through one page and I 
   // updated the syntax to pass a hex string to the database. 
@@ -278,27 +291,30 @@ String ReqJMN(String RFID1, String req, String info)
   cmd += " HTTP/1.1\n"
           "Host: " + String(DBIP) + "\n"
           "Connection: close\n\n";
+
   Serial.println(cmd);
   JMN.print(cmd);
 
-// const String httpRequest = "GET / HTTP/1.1\n"
-//                            "Host: example.com\n"
-//                            "Connection: close\n\n";
-
-  //display("Reading","  Response");
+  display("Reading","  Response");
   String response = "";
   delay(50); //VERY short delay to allow for buffering
+  int counter = 0;
   while (JMN.available()) // While there's data available
   {
+    Serial.write(JMN.read()); // read() gets the FIFO char
     char inChar = (char)JMN.read(); // Reads input as a char
+    Serial.println("inChar " + String(counter));
+    counter++;
+    Serial.println(inChar);
     response += inChar; // Adds input to a large string
+    Serial.println(response);
   }
 
   // Need to parse through the response for permission and for user name
   if (response != "") {
     Serial.println("Printing response...");
-    Serial.println(response);
-    //display("Signin logged.", "");
+    Serial.println(String(response));
+    display("Signin logged.", "");
   }
   
   if (JMN.connected()){
@@ -314,7 +330,7 @@ String ReqJMN(String RFID1, String req, String info)
 ////////////////// MISC UTILITIES ///////////////////////////////////
 //////////////////////////////////////////////////////
 
-// Function to //display a system error and instructions
+// Function to display a system error and instructions
 void SystemError(String error1, String error2)
 {
   String Ecmd1 = " ";
@@ -322,16 +338,16 @@ void SystemError(String error1, String error2)
  
   Ecmd1 = "PLEASE CONTACT";
   Ecmd2 = " A STAFF MEMBER";
-  //display(error1, error2);
+  display(error1, error2);
   delay(500);
 }
 
-// Function for sending strings to the //display
-/*void //display(String Line1, String Line2)
+// Function for sending strings to the display
+void display(String Line1, String Line2)
 {
-  // Clear the //display
+  // Clear the display
   LCD.write(254); LCD.write(128);
-  LCD.write("                "); // clear //display (16 characters each line)
+  LCD.write("                "); // clear display (16 characters each line)
   LCD.write("                ");
 
     // Concate the strings
@@ -347,13 +363,13 @@ void SystemError(String error1, String error2)
   LCD.write(L2);
 
   delay(25);
-}*/
+}
 
 void reinitialize(){
   successRead = 0;
   RFID_UID="";
   // initializeESP8266();
-  //display("Waiting for", "RFID card..");
+  display("Waiting for", "RFID card..");
 
 }
 
