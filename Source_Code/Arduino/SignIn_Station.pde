@@ -6,25 +6,32 @@
 // WARNING, WARNING ... DANGER, WILL ROBINSON, DANGER!!!
 // The station ID is unique to each terminal and must be manually entered.
 // Double and triple check this value is what you intend it to be.
-#define SID 1  // Station ID number  
+#define SID 2  // Station ID number  - needs to correlate with database setting
 
-// Wireless network information
+//// Wireless network information ////
+/////////////////////////////////////
 const char SSID[] = "tuftswireless";
-const char PSK[] = "";
+// Empty string since network is not password protected. This particular network is 
+// mac address registry based. We are not registering the mac addresses of these so
+// they are limited to accessing internal IPs or websites hosted by Tufts. 
+const char PSK[] = ""; 
+// Static IP of the directory location
 const char DBIP[] = "130.64.17.0";
 
 #define RST_PIN   5   // 
 #define SS_PIN    10  // 
 
 int successRead = 0;
-// unsigned long RFID_UID;
+
+// RFID_UID will be stored and sent as a hex string
 String RFID_UID;
 
 MFRC522 RFID(SS_PIN, RST_PIN);  // Create mfrc522 instance
 MFRC522::MIFARE_Key key;
-// SoftwareSerial ESP8266(8, 9); 
-    // D8 -> ESP8266 RX, D9 -> ESP8266 TX (Set by Sparkfun Shield)
-SoftwareSerial LCD(3,2);     // D2 -> LCD TX, D3 -> LCD RX (unused)
+
+///// Apparently this was unnecessary, having been created within SparkFunESP8266WiFi.h
+// SoftwareSerial ESP8266(8, 9);   // D8 -> ESP8266 RX, D9 -> ESP8266 TX (Set by Sparkfun Shield)
+SoftwareSerial LCD(3,2);        // D2 -> LCD TX, D3 -> LCD RX (unused)
 
 
 void setup() {
@@ -32,10 +39,12 @@ void setup() {
   // Initialize Serial Communications
   Serial.begin(9600);   // with the PC for debugging //displays
   LCD.begin(9600);      // With the LCD for external //displays
-  //serialTrigger(F("Press any key to begin."));
 
+  // Check and set up the wifi connection
   initializeESP8266();
 
+  ///// !!! The following could probably be thrown into a single function in case
+  ///// !!! signal is lost at some point. FOr now it's fine here thgouh. 
   Serial.println(F("connecting now "));
   //display("Connecting to", "     Wifi...");
 
@@ -63,6 +72,10 @@ void setup() {
   RFID.PCD_Init();    // Init MFRC522
   Serial.println(F("/n And it begins..."));
   
+
+  ////// !!! I uncommented the following and it seemed to eliminate the issue.
+  ////// !!! It was in all the example codes so maybe it needs the 
+
   // Prepare the key (used both as key A and as key B)
   // using FFFFFFFFFFFFh which is the default at chip delivery from the factory
   for (byte i = 0; i < 6; i++) {
@@ -86,7 +99,7 @@ void loop() {
   
   Serial.println(F("An RFID has been detected")); 
 
-  // Red light should go on now, green light will go on once permissions is given.
+  //!! Red light should go on now, green light will go on once permissions is given.
 
   //display("","");
   //display("RFID", "Detected!");
@@ -109,6 +122,26 @@ void loop() {
   // Serial.println(F("Database updated"));
   Serial.println(resp);
   Serial.println("\n");
+
+  // Need to parse through 'resp' here to grab the permission and the first 
+  // name to display. 
+  String fname = resp.substring(2);
+
+  if (resp.charat(0)== 'T')
+  {
+    // Turn on the green light for a second
+    // Display a welcome message using 'fname'
+  }
+  else if (resp.charat(0) == 'F')
+  {
+    // Blink the red light for a few seconds and give a 
+    // warning message, maybe say get approved at maker.tufts.edu
+  }
+  else if (resp.charat(0) == 'E')
+  {
+    // Blink the red light and give an error message.
+    // Display a warning to get a staff member. 
+  }
 
   reinitialize();  
   // Stop encryption on PCD
@@ -133,8 +166,12 @@ int getPICC() {
   return 1;
 }
 
+//// !!! I eliminated the hex string to long int function call since that seemed to
+//// !!! cause some junk. Maybe that filled the memory and caused the repeatability
+//// !!! problems. After eliminating that and adding the initilizing key call back into
+//// !!! the setup, I was able to get it running for a half hour randomly running various
+//// !!! RFID tags about 2 dozen times. 
 String GetRFID(byte *buffer, byte bufferSize) {
-  //THIS IS THE FUNCTION WHERE THE DEVICE STOPS WORKING AFTER ONE RFID CARD
   Serial.println("Get RFID called.");
   Serial.println("buffer size: " + String(bufferSize));
   String tmp = "";
@@ -154,9 +191,9 @@ String GetRFID(byte *buffer, byte bufferSize) {
   return tmp;
 }
 
-//////////!!!! Not robust enough. It's thrown out junk a few too many time and 
-//////////!!!! I can more easily handle conversion on the php side. It's much
-//////////!!!! simpler there and can be handled with a single command.
+//////////!!!! Not robust enough. It's thrown out junk a few too many time and I can
+//////////!!!! more easily handle conversion on the php side. It's much simpler there
+//////////!!!! and can be handled with a single command instead of taking up space here.
 
 // Convert a hex string to a long int
 // long int hexToDec(String hexString) {
@@ -173,16 +210,15 @@ String GetRFID(byte *buffer, byte bufferSize) {
 //   return decValue;
 // }
 
-//////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
 /////////////////////// WIFI / DATABASE UTILITIES //////////////////////
-//////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
 boolean initializeESP8266()
 {
-  // esp8266.begin() verifies that the ESP8266 is operational
+  // esp8266.begin() verifies that the ESP8266 is operational 
   // and sets it up for the rest of the sketch.
   // It returns either true or false -- indicating whether
   // communication was successul or not.
-  // true
   int test = esp8266.begin();
   if (test != true)
   {
@@ -197,10 +233,8 @@ boolean initializeESP8266()
   //  3 - ESP8266_MODE_STAAP - Station/AP combo
   // Use esp8266.getMode() to check which mode it's in:
   int retVal = esp8266.getMode();
-  if (retVal != ESP8266_MODE_STA)
-  { // If it's not in station mode.
-    // Use esp8266.setMode([mode]) to set it to a specified
-    // mode.
+  if (retVal != ESP8266_MODE_STA) 
+  { 
     retVal = esp8266.setMode(ESP8266_MODE_STA);
     if (retVal < 0)
     {
@@ -229,16 +263,18 @@ String ReqJMN(String RFID1, String req, String info)
 
   Serial.println(F("Successfully connected!"));
   //display("Successfully","connected!");
-  delay(400);
-  String cmd = "GET /Test.php";
-  // String cmd = "GET /SignIn.php?sid=";
-  // cmd += SID;
-  // cmd += "&rfid=";
-  // cmd += RFID1;
-  // cmd += "&req=";
-  // cmd += req;
-  // cmd += "&info=";
-  // cmd += info;
+  delay(250);
+  // Use the RFID.php page. I'd rather everything go through one page and I 
+  // updated the syntax to pass a hex string to the database. 
+  // 
+  String cmd = "GET /RFID.php?sid="; 
+  cmd += SID;
+  cmd += "&rfid=";
+  cmd += RFID1;
+  cmd += "&req=";
+  cmd += req;
+  cmd += "&info=";
+  cmd += info;
   cmd += " HTTP/1.1\n"
           "Host: " + String(DBIP) + "\n"
           "Connection: close\n\n";
@@ -269,7 +305,7 @@ String ReqJMN(String RFID1, String req, String info)
     JMN.stop();
   }
 
-  return "Some string";
+  return response;
 
 }
 

@@ -16,7 +16,7 @@ CREATE TABLE users (
     lname       text,
     email       text unique, -- Primary email address
     Temail      text unique, -- Tufts email address
-    rfid        bigint unique,
+    rfid        bytea unique, -- Hex format for postgreql is E'\\x420c0e11'
     reg_date    date DEFAULT CURRENT_DATE,
     exp_date    date DEFAULT CURRENT_DATE + interval '5 months',
     dept        integer REFERENCES departments (deptid),
@@ -193,5 +193,33 @@ INSERT INTO relationship (rel_id, rel) VALUES
 
 
 
+-- This is a dummy table used for tested out things. Expected to be dropped and remade
+-- with new columns and/or data types on several occasions. 
+CREATE TABLE users_test (
+    UID         serial PRIMARY KEY,
+    uname       text unique,
+    fname       text,
+    rfid        bytea unique, -- Hex format for postgreql is E'\\x420c0e11'
+    reg_date    date DEFAULT CURRENT_DATE,
+    lvis        date DEFAULT CURRENT_DATE -- Last time visitng any space
+    );
 
+INSERT INTO users_test VALUES (default, 'PupleStaff', 'Donatello', E'\\x420c0e11', default, NULL);
+INSERT INTO users_test VALUES (default, 'OrangeNunchucks', 'Michaelangelo', E'\\x52F1ADE1', default, NULL);
+INSERT INTO users_test VALUES (default, 'BlueSwords', 'Leonardo', E'\\x110e0c42', default, NULL);
+INSERT INTO users_test VALUES (default, 'RedSai', 'Rapheal', E'\\xe1adf152', default, NULL);
 
+CREATE TABLE permissions_test (
+    SID         integer REFERENCES stations (SID),
+    UID         integer REFERENCES users_test (UID),
+    access      boolean default false,
+    reg_date    date,
+    luse        timestamp without time zone, --Last time used
+    uses        integer DEFAULT 0,
+    time_used   interval hour to second DEFAULT '0 days 0:00:00'
+    );
+
+INSERT INTO permissions_test VALUES (2, 1, true, CURRENT_DATE, default, default, default);
+INSERT INTO permissions_test VALUES (2, 2, false, CURRENT_DATE, default, default, default);
+INSERT INTO permissions_test VALUES (2, 3, true, CURRENT_DATE, default, default, default);
+INSERT INTO permissions_test VALUES (2, 4, false, CURRENT_DATE, default, default, default);
