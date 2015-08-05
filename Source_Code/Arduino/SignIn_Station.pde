@@ -58,9 +58,15 @@ void setup() {
   retVal = esp8266.connect(SSID, PSK);
   if (retVal < 0)
     {
+
       Serial.println(F("Error connecting: "));
-      display("Error - reset","device");
-      while(1);
+      display("Error connecting","to Wifi");
+      delay(1000);
+      display("Resetting","");
+      delay(300);
+      void(* resetFunc) (void) = 0;
+      resetFunc();
+
     }
   else
   { 
@@ -68,7 +74,7 @@ void setup() {
     display("Successfully", "Connected!");
   }
   delay(500);
-  display("Waiting for", "     RFID..");
+  display("  Waiting for", "     RFID..");
 
   SPI.begin();      // Init SPI bus
   RFID.PCD_Init();    // Init MFRC522
@@ -91,9 +97,6 @@ void setup() {
 
 
 void loop() {
-  Serial.println("\n new loop");
-  Serial.println(String(successRead));
-  Serial.println(String(RFID_UID));
 
   do {
     successRead = getPICC();  // sets successRead to 1 when we get read from reader otherwise 0
@@ -101,22 +104,20 @@ void loop() {
   
   Serial.println(F("An RFID has been detected")); 
 
-  //!! Red light should go on now, green light will go on once permissions is given.
-
   display("","");
   display("    Welcome!", " RFID Detected!");
   digitalWrite(greenLED, HIGH);
   delay(1000); 
   digitalWrite(greenLED, LOW); 
 
-  Serial.print(F("debug 2:"));
+  // Serial.print(F("debug 2:"));
   Serial.print(F("Card UID:"));
   RFID_UID = GetRFID(RFID.uid.uidByte, RFID.uid.size);
   
   RFID.PICC_HaltA();       // Halt PICC
   RFID.PCD_StopCrypto1();  // Stop encryption on PCD
 
-  Serial.println(String(RFID_UID));
+  // Serial.println(String(RFID_UID));
 
   String req = "3"; // Req type is consistently 3 for Sign IN/OUT stations.
                     // **** string bc of arguments ReqJMN takes.
@@ -231,7 +232,15 @@ boolean initializeESP8266()
   if (test != true)
   {
     Serial.println(F("Error talking to ESP8266."));
-    display("Please reset","device");
+    while(1){
+        display("Error connecting","to Wifi Shield");
+        delay(1500);
+        display("Hard-reset","device"); 
+        delay(1500);
+        void(* resetFunc) (void) = 0;
+        resetFunc();
+    }
+
   }
   
   Serial.println(F("ESP8266 Shield Present"));
@@ -278,8 +287,7 @@ String ReqJMN(String RFID1, String req, String info)
   }
 
   Serial.println(F("Successfully connected!"));
-  display("Successfully","connected!");
-  delay(250);
+
   // Use the RFID.php page. I'd rather everything go through one page and I 
   // updated the syntax to pass a hex string to the database. 
   // 
@@ -298,7 +306,6 @@ String ReqJMN(String RFID1, String req, String info)
   Serial.println(cmd);
   JMN.print(cmd);
 
-  display("Reading","  Response");
   String response = "";
   delay(50); //VERY short delay to allow for buffering
   int counter = 0;
@@ -317,7 +324,8 @@ String ReqJMN(String RFID1, String req, String info)
   if (response != "") {
     Serial.println("Printing response...");
     Serial.println(String(response));
-    display("Signin logged.", "");
+    display("     Signin", "     logged!");
+    delay(500);
   }
   
   if (JMN.connected()){
@@ -372,9 +380,10 @@ void reinitialize(){
   successRead = 0;
   RFID_UID="";
   // initializeESP8266();
-  display("Waiting for", "RFID card..");
+  display("  Waiting for", "     RFID..");
 
 }
+
 
 
 
