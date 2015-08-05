@@ -67,10 +67,8 @@ void setup() {
     Serial.println(F("retval successful"));
     display("Successfully", "Connected!");
   }
-  delay(1000);
-  display("Waiting for", "RFID card..");
-  delay(1000);
-
+  delay(500);
+  display("Waiting for", "     RFID..");
 
   SPI.begin();      // Init SPI bus
   RFID.PCD_Init();    // Init MFRC522
@@ -106,8 +104,10 @@ void loop() {
   //!! Red light should go on now, green light will go on once permissions is given.
 
   display("","");
-  display("RFID", "Detected!");
-  delay(100);
+  display("    Welcome!", " RFID Detected!");
+  digitalWrite(greenLED, HIGH);
+  delay(1000); 
+  digitalWrite(greenLED, LOW); 
 
   Serial.print(F("debug 2:"));
   Serial.print(F("Card UID:"));
@@ -124,20 +124,19 @@ void loop() {
   String info = "SignIn"; // Info constant for Sign IN/OUT stations.
   // // ping the database
   String resp = ReqJMN(String(RFID_UID), req, info);
-  // Serial.println(F("Database updated"));
   Serial.println("resp = ");
   Serial.println(resp);
-  Serial.println("\n");
-  Serial.println(resp[0]);
-  Serial.println("resp.length: ");
-  unsigned int l = resp.length;
-  Serial.println(String(l));
 
+  
+  /*****************************************************************************
+  ******************************************************************************
+  ******** The following is code to handle the server responses, 
+  ******** which currently does not function (board doesn't parse server resp)
+  ******************************************************************************
 
-
+  String fname = resp.substring(2);
   // Need to parse through 'resp' here to grab the permission and the first 
   // name to display. 
-  String fname = resp.substring(2);
 
   // **** changed to [] notation from 'charat(0)', which i've never seen before
   if (resp[0]== 'T')
@@ -175,10 +174,9 @@ void loop() {
       delay(1000);
     }
   }
+  **************************************************************************/
 
   reinitialize();  
-  // Stop encryption on PCD
-  //RFID.PCD_StopCrypto1();
 }
 
 
@@ -233,7 +231,7 @@ boolean initializeESP8266()
   if (test != true)
   {
     Serial.println(F("Error talking to ESP8266."));
-    display("pls reset","");
+    display("Please reset","device");
   }
   
   Serial.println(F("ESP8266 Shield Present"));
@@ -249,6 +247,7 @@ boolean initializeESP8266()
     if (retVal < 0)
     {
       Serial.println(F("Error setting mode."));
+      display("Error setting","mode");
       return false;
     }
   }
@@ -257,7 +256,7 @@ boolean initializeESP8266()
   //blink leds once
   digitalWrite(greenLED, HIGH);
   digitalWrite(redLED, HIGH);
-  delay(1000); 
+  delay(500); 
   digitalWrite(greenLED, LOW);  
   digitalWrite(redLED, LOW);  
 
