@@ -129,6 +129,10 @@ void loop() {
   Serial.println(resp);
   Serial.println("\n");
   Serial.println(resp[0]);
+  Serial.println("resp.length: ");
+  unsigned int l = resp.length;
+  Serial.println(String(l));
+
 
 
   // Need to parse through 'resp' here to grab the permission and the first 
