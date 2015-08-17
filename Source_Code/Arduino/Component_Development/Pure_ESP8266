@@ -12,6 +12,8 @@ SoftwareSerial ESP8266(8, 9); // D9 -> ESP8266 RX, D10 -> ESP8266 TX
 #define PASS ""        // Wifi Password
 #define IP "130.64.17.0"      // IP JMN
 
+char JMNR[18] = "                  "
+
 String RFID = " ";
 int req = 1; 
 String info = " ";
@@ -125,37 +127,95 @@ boolean connectWiFi(){
   delay(100);
 }
 
-String AccessReq(String RFID1, String req1, String info1)
+String ReqJMN(String RFID1, String req1, String info1)
 {
-  // Set up necessary commands
+  // May need to set up connection with AT+CIPMUX=0
+  // Set up necessary command strings
+  // Need length of http request first
+  String httpReq = "GET /RFID.php?stid=";
+  httpReq += STID; // Universal constant
+  httpReq += "&rfid=";
+  httpReq += RFID1; // Local input
+  httpReq += "&req=";
+  httpReq += req1; // local input
+  httpReq += "&info=";
+  httpReq += info1; // local input
+  httpReq += " HTTP/1.0\r\n\r\n";
+  //  Send AT command to ESP8266
+  // Start connection - 
+  ESP8266.print("AT+CIPSTART=\"TCP\",\"");
+  ESP8266.print(IP);
+  ESP8266.println("\",80");
+
+  // Send request - 
+  ESP8266.print("AT+CIPSEND="); 
+  ESP8266.println(httpReq.length()); // Specifies how much data is being sent
+  delay(500);
+  if(ESP8266.find(">")){
+    ESP8266.print(httpReq);
+  }else{
+    // Need error message
+  }
+  delay(100);
+  if(ESP8266.find("OK"))
+  {
+    if(ESP8266.find("JMNR:"))
+    {
+      n = JMNR.length();
+      for(int i = 0; i <= n; i++)
+      {
+        JMNR[i] = (char)client.read();
+        delay(2);
+      }
+    }
+    else
+    {
+      // Some error handling
+    }
+  }
+  else if(ESP8266.find("ERROR"))
+  {
+    // Some known error handling
+  }
+  else
+  {
+    // Some unknown error handling
+  }
+  // Should this output a boolean since JMNR is universal or output the JMNR as a string?
+}
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  Serial.println(cmd);
   String 
 }
 
 
-  //   connectWiFi();
-  //   delay(500);
-  //   ESP8266.println("AT+CIPMUX=0");
-  //   delay(500); 
-  // }
+// Old stuff 
+
 
 void ReqJMN(String RFID1, String req, String info)
 {
-  Serial.println(F("in reqjmn"));
-  // To use the ESP8266 as a TCP client, use the 
-  // ESP8266Client class. First, create an object:
-  ESP8266Client client;
 
-  // ESP8266Client connect([server], [port]) is used to 
-  // connect to a server (const char * or IPAddress) on
-  // a specified port.
-  // Returns: 1 on success, 2 on already connected,
-  // negative on fail (-1=TIMEOUT, -3=FAIL).
-  int retVal = client.connect(DBIP, 80);
-  if (retVal <= 0)
-  {
-    display("Failed to connect.", "reset device.");
-    return;
-  }
 
   else{
     // I'm putting the string declaration in this else statement to take advantage of local variable scoping.
