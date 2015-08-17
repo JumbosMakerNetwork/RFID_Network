@@ -1,0 +1,182 @@
+// Full RFID program
+// Brian O'Connell 2015-06-15
+#include <SoftwareSerial.h>
+
+SoftwareSerial ESP8266(9, 10); // D9 -> ESP8266 RX, D10 -> ESP8266 TX
+SoftwareSerial rfid(7, 8);   // D7 -> RFID RX,  D8 -> RFID TX
+SoftwareSerial LCD(3,2);     // D2 -> LCD TX, D3 -> LCD RX (unused)
+
+#define STID 1                  // Station ID number
+
+// WIFI vars
+#define SSID "JJB92"            // Wifi ID
+#define PASS "Cupcake44"        // Wifi Password
+#define IP "192.168.1.140"      // IP JMN
+
+//RFID var
+String TAG = " "; 
+int flag = 0;
+int StrRFID[11]; // String for RFID
+int State = 0;
+int lastState = 0;
+int var = 0;
+// For timers
+unsigned long t0 = 0;
+unsigned long t1 = 0;
+unsigned long t2 = 0;
+
+// Pin for RFID checking
+#define det 11
+// Control pin for interlock
+#define ctrl 6
+
+String RFID = " ";
+int req = 1; 
+String info = " ";
+String Response1 = " ";
+
+boolean access = false;
+String fname = " ";
+
+
+void setup()
+{
+  Serial.print("begin");
+  delay(2500);
+  Serial.begin(9600);
+  ESP8266.begin(9600);
+  rfid.begin(19200);
+  LCD.begin(9600);
+
+  // Setup Wifi
+  Serial.println("AT");
+  delay(5000);
+  if(ESP8266.find("OK")){
+    Serial.println("RECEIVED: OK");
+    connectWiFi();
+    delay(500);
+    ESP8266.println("AT+CIPMUX=0");
+    delay(500); 
+  }
+
+  // Setup RFID
+  pinMode(det, INPUT);
+  delay(50);
+  halt();
+}
+
+
+void loop()
+{
+  read_serial();
+  delay(50);
+}
+
+// Wifi functions
+String AccessReq(String RFID1, String req1, String info1){
+  Serial.println("Setting up connection - ");
+  String resp = " ";
+  String cmd = "AT+CIPSTART=\"TCP\",\"";
+  cmd += IP;
+  cmd += "\",80";
+  Serial.println(cmd);
+  delay(2000);
+  if(ESP8266.find("Error")){
+    Serial.print("RECEIVED: Error");
+    return "Error";
+  }
+  Serial.println("Sending Get - ");
+  cmd = "GET /RFID.php?stid=";
+  cmd += STID;
+  cmd += "&rfid=";
+  cmd += RFID1;
+  cmd += "&req=";
+  cmd += req1;
+  cmd += "&info=";
+  cmd += info1;
+  cmd += " HTTP/1.0\r\n\r\n";
+  Serial.print("AT+CIPSEND=");
+  Serial.println(cmd.length());
+  Serial.println(cmd);
+  delay(250);
+  ESP8266.print("AT+CIPSEND="); 
+  ESP8266.println(cmd.length());
+  delay(1000);
+  if(ESP8266.find(">")){
+    Serial.print(">");
+    Serial.print(cmd);
+    ESP8266.print(cmd);
+  }else{
+    Serial.println("AT+CIPCLOSE");
+  }
+  delay(100);
+  if(ESP8266.find("OK")){
+    Serial.println("RECEIVED: OK");
+    ESP8266.find("Access-");
+    char bytesAccess[1];
+    ESP8266.readBytes(bytesAccess, 1);
+    String resp = String(bytesAccess);
+    ESP8266.find("Name-");
+    char bytesName[22]; // 16 characters for the display and then CLOSED which ESP8266 also sends
+    ESP8266.readBytes(bytesName, 22);
+    resp += String(bytesName);
+    
+    int Cloc = resp.lastIndexOf("CLOSED");
+    resp.remove(Cloc);
+
+  }else{
+    Serial.println("RECEIVED: Error");
+  }
+  Serial.println("End of AccessReq Function");
+  Serial.println(resp);
+  return resp;
+}
+
+void ParseResp(String Response1)
+{
+  fname = Response1.substring(3);
+  if (String(Response1.charAt(0)) == "T")
+  {
+    access = true;
+    Serial.println("Access Granted for " + fname);
+  }
+  else if (String(Response1.charAt(0)) == "F")
+  {
+    access = false;
+    Serial.println("Access Denied for " + fname);
+  }
+  else
+  {
+    access = false;
+    Serial.println("Error ocurred");
+  }
+}
+
+ 
+boolean connectWiFi(){
+  ESP8266.println("AT+CWMODE=1");
+  delay(2000);
+  String cmd="AT+CWJAP=\"";
+  cmd+=SSID;
+  cmd+="\",\"";
+  cmd+=PASS;
+  cmd+="\"";
+  Serial.println(cmd);
+  delay(1000);
+  if(ESP8266.find("OK"))
+  {
+    Serial.println("RECEIVED: OK");
+    return true;
+  }
+  else
+  {
+    Serial.println("RECEIVED: Error");
+    return false;
+  }
+  delay(100);
+}
+
+
+
+
+

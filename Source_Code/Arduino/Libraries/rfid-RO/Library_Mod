@@ -1,0 +1,78 @@
+
+#include <MFRC522.h>
+
+MFRC522 RFID(SS_PIN, RST_PIN);  // Create mfrc522 instance
+
+InArduinoApp(){
+  MFRC522::MIFARE_Key key;
+  RFID.PCD_Init();
+  RFID.uid.uidByte;
+  RFID.uid.size;
+  RFID.PICC_HaltA();       // Halt PICC
+  RFID.PCD_StopCrypto1();
+  RFID.PICC_IsNewCardPresent();
+  RFID.PICC_ReadCardSerial()
+} // For Reference
+
+
+RFID.PCD_Init();
+    setSPIConfig();
+      SPI.setBitOrder(MSBFIRST);
+      SPI.setDataMode(SPI_MODE0);
+    PCD_Reset();
+      PCD_WriteRegister(, );
+      PCD_ReadRegister( );
+    PCD_AntennaOn();
+
+
+RFID.PICC_HaltA();
+  PCD_CalculateCRC(, 2, &[2]);
+    PCD_SetRegisterBitMask();   // FlushBuffer = 1, FIFO initialization
+  PCD_TransceiveData();
+    PCD_CommunicateWithPICC( );
+      PCD_CalculateCRC();
+
+
+RFID.PCD_StopCrypto1();
+  PCD_ClearRegisterBitMask()
+
+RFID.PICC_IsNewCardPresent();
+  PICC_RequestA();
+    PICC_REQA_or_WUPA();
+      PCD_ClearRegisterBitMask(); 
+      PCD_TransceiveData();
+
+RFID.PICC_ReadCardSerial();
+  PICC_Select();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
