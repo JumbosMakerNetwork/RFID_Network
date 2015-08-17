@@ -1,34 +1,16 @@
-// Full RFID program
+// ESP8266 Functions
 // Brian O'Connell 2015-06-15
 #include <SoftwareSerial.h>
 
-SoftwareSerial ESP8266(9, 10); // D9 -> ESP8266 RX, D10 -> ESP8266 TX
-SoftwareSerial rfid(7, 8);   // D7 -> RFID RX,  D8 -> RFID TX
-SoftwareSerial LCD(3,2);     // D2 -> LCD TX, D3 -> LCD RX (unused)
+SoftwareSerial ESP8266(8, 9); // D9 -> ESP8266 RX, D10 -> ESP8266 TX
+
 
 #define STID 1                  // Station ID number
 
 // WIFI vars
-#define SSID "JJB92"            // Wifi ID
-#define PASS "Cupcake44"        // Wifi Password
-#define IP "192.168.1.140"      // IP JMN
-
-//RFID var
-String TAG = " "; 
-int flag = 0;
-int StrRFID[11]; // String for RFID
-int State = 0;
-int lastState = 0;
-int var = 0;
-// For timers
-unsigned long t0 = 0;
-unsigned long t1 = 0;
-unsigned long t2 = 0;
-
-// Pin for RFID checking
-#define det 11
-// Control pin for interlock
-#define ctrl 6
+#define SSID "tuftswireless"            // Wifi ID
+#define PASS ""        // Wifi Password
+#define IP "130.64.17.0"      // IP JMN
 
 String RFID = " ";
 int req = 1; 
@@ -41,28 +23,12 @@ String fname = " ";
 
 void setup()
 {
-  Serial.print("begin");
-  delay(2500);
+  // Setup serial monitoring for debugging
   Serial.begin(9600);
-  ESP8266.begin(9600);
-  rfid.begin(19200);
-  LCD.begin(9600);
 
   // Setup Wifi
-  Serial.println("AT");
-  delay(5000);
-  if(ESP8266.find("OK")){
-    Serial.println("RECEIVED: OK");
-    connectWiFi();
-    delay(500);
-    ESP8266.println("AT+CIPMUX=0");
-    delay(500); 
-  }
+  ESP8266.begin(9600);
 
-  // Setup RFID
-  pinMode(det, INPUT);
-  delay(50);
-  halt();
 }
 
 
@@ -72,7 +38,186 @@ void loop()
   delay(50);
 }
 
-// Wifi functions
+// ESP8266 functions
+boolean ESP8266_Check()
+{
+  ESP8266.println("AT");
+  delay(500);
+  if(ESP8266.find("OK"))
+  {
+    Serial.println(F("RECEIVED: OK"));
+    return true;
+  }
+  else if(ESP8266.find("ERROR"))
+  {
+    Serial.println(F("RECEIVED: Error"));
+    return false;
+  }
+  else
+  {
+    Serial.println(F("RECEIVED: No Response"));
+    return false;
+  }
+  delay(100);
+}
+
+boolean ESP8266_Mode(int mode);
+{
+  ESP8266.println(F("AT+CWMODE?"));
+  if(ESP8266.find(mode)) // Might have to conver mode from an int to a char
+  {
+    Serial.print(F("Mode already set"));
+    return true;
+  }
+  ESP8266.print(F("AT+CWMODE="));
+  ESP8266.println(mode);
+    if(ESP8266.find("OK"))
+  {
+    Serial.println(F("RECEIVED: OK"));
+    return true;
+  }
+  else if(ESP8266.find("ERROR"))
+  {
+    Serial.println(F("RECEIVED: Error"));
+    return false;
+  }
+  else
+  {
+    Serial.println(F("RECEIVED: No Response"));
+    return false;
+  }
+  delay(100);
+}
+
+
+boolean connectWiFi(){
+  // May add a CWLAP check later to check for availability of intended ssid 
+  // but right now we're in a controlled environment so this will do for now. 
+  ESP8266.prinln("AT+CWJAP?");
+  if(ESP8266.find(SSID))
+  {
+    Serial.print(F("Already connected"));
+    return true;
+  }
+  delay(100);
+  String cmd="AT+CWJAP=\"";
+  cmd+=SSID;
+  cmd+="\",\"";
+  cmd+=PASS;
+  cmd+="\"";
+  ESP8266.println(cmd);
+  delay(500);
+  if(ESP8266.find("OK"))
+  {
+    Serial.println(F("RECEIVED: OK"));
+    return true;
+  }
+  else if(ESP8266.find("ERROR"))
+  {
+    Serial.println(F("RECEIVED: Error"));
+    return false;
+  }
+  else
+  {
+    Serial.println(F("RECEIVED: No Response"));
+    return false;
+  }
+  delay(100);
+}
+
+String AccessReq(String RFID1, String req1, String info1)
+{
+  // Set up necessary commands
+  String 
+}
+
+
+  //   connectWiFi();
+  //   delay(500);
+  //   ESP8266.println("AT+CIPMUX=0");
+  //   delay(500); 
+  // }
+
+void ReqJMN(String RFID1, String req, String info)
+{
+  Serial.println(F("in reqjmn"));
+  // To use the ESP8266 as a TCP client, use the 
+  // ESP8266Client class. First, create an object:
+  ESP8266Client client;
+
+  // ESP8266Client connect([server], [port]) is used to 
+  // connect to a server (const char * or IPAddress) on
+  // a specified port.
+  // Returns: 1 on success, 2 on already connected,
+  // negative on fail (-1=TIMEOUT, -3=FAIL).
+  int retVal = client.connect(DBIP, 80);
+  if (retVal <= 0)
+  {
+    display("Failed to connect.", "reset device.");
+    return;
+  }
+
+  else{
+    // I'm putting the string declaration in this else statement to take advantage of local variable scoping.
+    // Since memory seems to be such an issue, the memory it takes to generate this string should be 'recycled'
+    // after this 'else' conditional.
+    // URL path is a string, and to avoid the += operator, we explicitly redefine appropriate parts
+
+    String httpRequest = "GET /RFID.php?sid=2&rfid=zzzzzzzz&req=z&info=zzzzzz HTTP/1.1\n"
+                           "Host: 130.64.17.0\n"
+                           "Connection: close\n\n";
+
+    //populate with RFID
+    for(int i = 0; i <8; i++){
+      httpRequest[26+i] = RFID1[i];
+    }
+    //populate with req and info
+    httpRequest[38] = req[0];
+
+    size_t j;
+    for(j=0; info[j]!='\0'; ++j);   //have to hand count length of info because its a String not a const char*
+    size_t len = j % 6;                //using modulus to make sure it fits in the url param
+    for(int i = 0; i < len; i++){
+      httpRequest[45+i] = info[i];
+    }
+    client.print(httpRequest);
+    delay(1000); //time it takes to buffer
+  }
+
+  // Currently, the response I get from the .php is only the first 63 characters of the response headers. It doesn't get to the body.
+  // I don't know why, and this is a pretty crucial bug. It's not a buffering issue, and I don't think it's a memory issue, either.
+
+  if( client.available())
+  {   
+      Serial.println(F("serial available: "));
+      Serial.println(client.available());
+      
+      if( client.find("Da") ){            /// currently this is seeking the 'date' parameter in the header, for testing.
+        Serial.println(F("I found 'Date'."));  /// we're going to want to make the argument of find() "JMNR:" once we get the body
+        for(int i = 0; i < 6; i++){
+          JMNR[i] = (char)client.read();
+          delay(2);
+        }
+      }
+      else if( !client.find("Da") ){
+        Serial.println(F("I can't find 'Date' "));
+        }
+  }
+  
+  // connected() is a boolean return value - 1 if the 
+  // connection is active, 0 if it's closed.
+  if (client.connected()){
+    client.stop(); // stop() closes a TCP connection.
+    client.flush();
+  }
+
+}
+
+
+
+
+
+
 String AccessReq(String RFID1, String req1, String info1){
   Serial.println("Setting up connection - ");
   String resp = " ";
@@ -152,29 +297,7 @@ void ParseResp(String Response1)
   }
 }
 
- 
-boolean connectWiFi(){
-  ESP8266.println("AT+CWMODE=1");
-  delay(2000);
-  String cmd="AT+CWJAP=\"";
-  cmd+=SSID;
-  cmd+="\",\"";
-  cmd+=PASS;
-  cmd+="\"";
-  Serial.println(cmd);
-  delay(1000);
-  if(ESP8266.find("OK"))
-  {
-    Serial.println("RECEIVED: OK");
-    return true;
-  }
-  else
-  {
-    Serial.println("RECEIVED: Error");
-    return false;
-  }
-  delay(100);
-}
+
 
 
 
