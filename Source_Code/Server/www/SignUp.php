@@ -96,6 +96,7 @@
 		$link = pg_Connect("host=localhost dbname=JMN_DEV user=jumbo password=jumbo_pw7");
 		pg_exec($link, "INSERT INTO users VALUES (default, '$uname', '{$fname}', '{$lname}', '$email', '$Temail', default, default, default, $dept, $C_year, $byear, default, default, default, $Rship)");
 		// Need an error check
+		$cmd = exec("python UserSignUpInit.py .$uname");
 		pg_close($link);
 
 
