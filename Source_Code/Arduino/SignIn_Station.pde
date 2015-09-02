@@ -80,7 +80,6 @@ void loop() {
   RFID_UID = GetRFID(RFID.uid.uidByte, RFID.uid.size);
 
   display("Welcome!", "RFID Detected!");
-  digitalWrite(greenLED, HIGH);
   String info = "SignIn"; // Info constant for Sign IN/OUT stations.
 
   RFID.PICC_HaltA();       // Halt PICC
@@ -89,10 +88,10 @@ void loop() {
   String resp = "";
   resp = ReqJMN( RFID_UID, "3", info);
   Serial.println(resp);
-  digitalWrite(greenLED, LOW);  
 
       if (resp[0]== 'T')
       {
+        digitalWrite(greenLED, HIGH);
         String name = getName(resp);
         Serial.println(resp);
         Serial.println(name);
@@ -101,13 +100,17 @@ void loop() {
         delay(1000);
         display("Permission","Granted!");
         delay(1000);
+        digitalWrite(greenLED, LOW);  
+
       }
       else if (resp[0] == 'F')
       {
         digitalWrite(redLED, HIGH);  
         display("Insufficient","credentials");
-        delay(1000);
+        delay(2000);
         display("Get approved at","maker.tufts.edu");
+        delay(2000);
+        digitalWrite(redLED, LOW);  
 
       }
       else if (resp[0] == 'E')
