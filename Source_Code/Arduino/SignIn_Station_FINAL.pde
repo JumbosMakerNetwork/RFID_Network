@@ -16,7 +16,7 @@ const char SSID[] = "tuftswireless";
 const char PSK[] = ""; 
 // // Static IP of the directory location
 const char DBIP[] = "130.64.17.0";
-#define STID 1                  // Station ID number
+#define STID 1                  // Station ID number 
 
 #define RST_PIN   5   // 
 #define SS_PIN    10  // 
@@ -36,7 +36,6 @@ const int greenLED = 7;
 const int redLED = 6;
 
 void setup() {
-  display("Welcome", "");
   pinMode(redLED, OUTPUT);
   pinMode(greenLED, OUTPUT);
 
@@ -44,11 +43,14 @@ void setup() {
   Serial.begin(9600);   // with the PC for debugging displays
   LCD.begin(9600);      // With the LCD for external displays
   ESP8266.begin(9600);
+  display("Welcome", "");
 
   while(!ESP8266_Check()){}
+  display("esp8266", "checked!");
   Serial.println("esp8266 checked!");
   while( !ESP8266_Mode(3) ){}
   Serial.println("esp8266 set to mode 3!");
+  display("Connecting", "To Wifi...");
   while( !connectWiFi() ){}
   Serial.println("esp8266 successfully connected to wifi!");
 
@@ -97,9 +99,9 @@ void loop() {
         Serial.println(name);
 
         display("Welcome", name);
-        delay(1000);
+        delay(3000);
         display("Permission","Granted!");
-        delay(1000);
+        delay(2000);
         digitalWrite(greenLED, LOW);  
 
       }
@@ -119,10 +121,10 @@ void loop() {
         // Display a warning to get a staff member. 
         display("No ID found","in Database");
           digitalWrite(redLED, HIGH);  
-          delay(1000);
+          delay(3000);
           display("Get approved at","maker.tufts.edu"); 
           digitalWrite(redLED, LOW);
-          delay(1000);
+          delay(3000);
       }
   display("Waiting for", "RFID..");
 }
