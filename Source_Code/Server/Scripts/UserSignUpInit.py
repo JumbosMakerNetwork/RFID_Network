@@ -9,14 +9,14 @@ con = None
 
 try:
      
-    con = psycopg2.connect("dbname='JMN_DEV' user='jadmin' password='jadmin_pw7'") 
+    con = psycopg2.connect("dbname='JMN' host='localhost' user='jadmin' password='jadmin_pw7'") 
 
     username = sys.argv[1]
     cur = con.cursor()    
     cur.execute("SELECT uid FROM users WHERE uname=%s", username)
     uid = cur.fetchone()
 
-    cur.execute("SELECT * FROM stations")
+    cur.execute("SELECT sid FROM stations")
     stations = cur.fetchall()
 
     sid = 1;
