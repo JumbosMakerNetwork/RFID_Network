@@ -239,34 +239,34 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <wire x1="49.53" y1="40.64" x2="49.53" y2="55.88" width="0.127" layer="51"/>
 <wire x1="49.53" y1="55.88" x2="52.07" y2="55.88" width="0.127" layer="51"/>
 <wire x1="52.07" y1="55.88" x2="52.07" y2="40.64" width="0.127" layer="51"/>
-<pad name="RES" x="50.8" y="24.13" drill="1.016" diameter="1.8796" rot="R90"/>
-<pad name="3.3V" x="50.8" y="26.67" drill="1.016" diameter="1.8796" rot="R90"/>
-<pad name="5V" x="50.8" y="29.21" drill="1.016" diameter="1.8796" rot="R90"/>
-<pad name="GND@0" x="50.8" y="31.75" drill="1.016" diameter="1.8796" rot="R90"/>
-<pad name="GND@1" x="50.8" y="34.29" drill="1.016" diameter="1.8796" rot="R90"/>
-<pad name="VIN" x="50.8" y="36.83" drill="1.016" diameter="1.8796" rot="R90"/>
-<pad name="A0" x="50.8" y="41.91" drill="1.016" diameter="1.8796" rot="R90"/>
-<pad name="A1" x="50.8" y="44.45" drill="1.016" diameter="1.8796" rot="R90"/>
-<pad name="A2" x="50.8" y="46.99" drill="1.016" diameter="1.8796" rot="R90"/>
-<pad name="A3" x="50.8" y="49.53" drill="1.016" diameter="1.8796" rot="R90"/>
-<pad name="A4" x="50.8" y="52.07" drill="1.016" diameter="1.8796" rot="R90"/>
-<pad name="A5" x="50.8" y="54.61" drill="1.016" diameter="1.8796" rot="R90"/>
-<pad name="RX" x="2.54" y="54.61" drill="1.016" diameter="1.8796" rot="R90"/>
-<pad name="TX" x="2.54" y="52.07" drill="1.016" diameter="1.8796" rot="R90"/>
-<pad name="D2" x="2.54" y="49.53" drill="1.016" diameter="1.8796" rot="R90"/>
-<pad name="D3" x="2.54" y="46.99" drill="1.016" diameter="1.8796" rot="R90"/>
-<pad name="D4" x="2.54" y="44.45" drill="1.016" diameter="1.8796" rot="R90"/>
-<pad name="D5" x="2.54" y="41.91" drill="1.016" diameter="1.8796" rot="R90"/>
-<pad name="D6" x="2.54" y="39.37" drill="1.016" diameter="1.8796" rot="R90"/>
-<pad name="D7" x="2.54" y="36.83" drill="1.016" diameter="1.8796" rot="R90"/>
-<pad name="D8" x="2.54" y="33.02" drill="1.016" diameter="1.8796" rot="R90"/>
-<pad name="D9" x="2.54" y="30.48" drill="1.016" diameter="1.8796" rot="R90"/>
-<pad name="D10" x="2.54" y="27.94" drill="1.016" diameter="1.8796" rot="R90"/>
-<pad name="D11" x="2.54" y="25.4" drill="1.016" diameter="1.8796" rot="R90"/>
-<pad name="D12" x="2.54" y="22.86" drill="1.016" diameter="1.8796" rot="R90"/>
-<pad name="D13" x="2.54" y="20.32" drill="1.016" diameter="1.8796" rot="R90"/>
-<pad name="GND@2" x="2.54" y="17.78" drill="1.016" diameter="1.8796" rot="R90"/>
-<pad name="AREF" x="2.54" y="15.24" drill="1.016" diameter="1.8796" rot="R90"/>
+<pad name="RES" x="50.8" y="24.13" drill="1.016" diameter="1.6764" shape="long" rot="R180"/>
+<pad name="3.3V" x="50.8" y="26.67" drill="1.016" diameter="1.6764" shape="long" rot="R180"/>
+<pad name="5V" x="50.8" y="29.21" drill="1.016" diameter="1.6764" shape="long" rot="R180"/>
+<pad name="GND@0" x="50.8" y="31.75" drill="1.016" diameter="1.6764" shape="long" rot="R180"/>
+<pad name="GND@1" x="50.8" y="34.29" drill="1.016" diameter="1.6764" shape="long" rot="R180"/>
+<pad name="VIN" x="50.8" y="36.83" drill="1.016" diameter="1.6764" shape="long" rot="R180"/>
+<pad name="A0" x="50.8" y="41.91" drill="1.016" diameter="1.6764" shape="long" rot="R180"/>
+<pad name="A1" x="50.8" y="44.45" drill="1.016" diameter="1.6764" shape="long" rot="R180"/>
+<pad name="A2" x="50.8" y="46.99" drill="1.016" diameter="1.6764" shape="long" rot="R180"/>
+<pad name="A3" x="50.8" y="49.53" drill="1.016" diameter="1.6764" shape="long" rot="R180"/>
+<pad name="A4" x="50.8" y="52.07" drill="1.016" diameter="1.6764" shape="long" rot="R180"/>
+<pad name="A5" x="50.8" y="54.61" drill="1.016" diameter="1.6764" shape="long" rot="R180"/>
+<pad name="RX" x="2.54" y="54.61" drill="1.016" diameter="1.6764" shape="long" rot="R180"/>
+<pad name="TX" x="2.54" y="52.07" drill="1.016" diameter="1.6764" shape="long" rot="R180"/>
+<pad name="D2" x="2.54" y="49.53" drill="1.016" diameter="1.6764" shape="long" rot="R180"/>
+<pad name="D3" x="2.54" y="46.99" drill="1.016" diameter="1.6764" shape="long" rot="R180"/>
+<pad name="D4" x="2.54" y="44.45" drill="1.016" diameter="1.6764" shape="long" rot="R180"/>
+<pad name="D5" x="2.54" y="41.91" drill="1.016" diameter="1.6764" shape="long" rot="R180"/>
+<pad name="D6" x="2.54" y="39.37" drill="1.016" diameter="1.6764" shape="long" rot="R180"/>
+<pad name="D7" x="2.54" y="36.83" drill="1.016" diameter="1.6764" shape="long" rot="R180"/>
+<pad name="D8" x="2.54" y="33.02" drill="1.016" diameter="1.6764" shape="long" rot="R180"/>
+<pad name="D9" x="2.54" y="30.48" drill="1.016" diameter="1.6764" shape="long" rot="R180"/>
+<pad name="D10" x="2.54" y="27.94" drill="1.016" diameter="1.6764" shape="long" rot="R180"/>
+<pad name="D11" x="2.54" y="25.4" drill="1.016" diameter="1.6764" shape="long" rot="R180"/>
+<pad name="D12" x="2.54" y="22.86" drill="1.016" diameter="1.6764" shape="long" rot="R180"/>
+<pad name="D13" x="2.54" y="20.32" drill="1.016" diameter="1.6764" shape="long" rot="R180"/>
+<pad name="GND@2" x="2.54" y="17.78" drill="1.016" diameter="1.6764" shape="long" rot="R180"/>
+<pad name="AREF" x="2.54" y="15.24" drill="1.016" diameter="1.6764" shape="long" rot="R180"/>
 <text x="49.4157" y="32.258" size="1.016" layer="21" font="vector" ratio="15" rot="R180">GND</text>
 <text x="49.4157" y="34.798" size="1.016" layer="21" font="vector" ratio="15" rot="R180">GND</text>
 <text x="49.4157" y="29.718" size="1.016" layer="21" font="vector" ratio="15" rot="R180">+5V</text>
@@ -296,12 +296,12 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <text x="3.81" y="49.022" size="1.016" layer="21" font="vector" ratio="15">2</text>
 <text x="3.81" y="51.562" size="1.016" layer="21" font="vector" ratio="15">TX</text>
 <text x="3.81" y="54.102" size="1.016" layer="21" font="vector" ratio="15">RX</text>
-<pad name="SDA" x="2.54" y="12.7" drill="1.016" diameter="1.8796" rot="R90"/>
-<pad name="SCL" x="2.54" y="10.16" drill="1.016" diameter="1.8796" rot="R90"/>
+<pad name="SDA" x="2.54" y="12.7" drill="1.016" diameter="1.6764" shape="long" rot="R180"/>
+<pad name="SCL" x="2.54" y="10.16" drill="1.016" diameter="1.6764" shape="long" rot="R180"/>
 <text x="3.81" y="12.192" size="1.016" layer="21" font="vector" ratio="15">SDA</text>
 <text x="3.81" y="9.652" size="1.016" layer="21" font="vector" ratio="15">SCL</text>
-<pad name="IOREF" x="50.8" y="21.59" drill="1.016" diameter="1.8796" rot="R90"/>
-<pad name="NC" x="50.8" y="19.05" drill="1.016" diameter="1.8796" rot="R90"/>
+<pad name="IOREF" x="50.8" y="21.59" drill="1.016" diameter="1.6764" shape="long" rot="R180"/>
+<pad name="NC" x="50.8" y="19.05" drill="1.016" diameter="1.6764" shape="long"/>
 <text x="49.4157" y="22.098" size="1.016" layer="21" font="vector" ratio="15" rot="R180">IOREF</text>
 <wire x1="22.225" y1="53.34" x2="21.59" y2="53.975" width="0.254" layer="51"/>
 <wire x1="21.59" y1="53.975" x2="21.59" y2="57.785" width="0.254" layer="51"/>
@@ -983,14 +983,14 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <package name="1X08_LONGPADS">
 <wire x1="-1.27" y1="0.635" x2="-1.27" y2="-0.635" width="0.2032" layer="21"/>
 <wire x1="19.05" y1="0.635" x2="19.05" y2="-0.635" width="0.2032" layer="21"/>
-<pad name="1" x="0" y="0" drill="1.1176" diameter="1.8796" shape="long" rot="R90"/>
-<pad name="2" x="2.54" y="0" drill="1.1176" diameter="1.8796" shape="long" rot="R90"/>
-<pad name="3" x="5.08" y="0" drill="1.1176" diameter="1.8796" shape="long" rot="R90"/>
-<pad name="4" x="7.62" y="0" drill="1.1176" diameter="1.8796" shape="long" rot="R90"/>
-<pad name="5" x="10.16" y="0" drill="1.1176" diameter="1.8796" shape="long" rot="R90"/>
-<pad name="6" x="12.7" y="0" drill="1.1176" diameter="1.8796" shape="long" rot="R90"/>
-<pad name="7" x="15.24" y="0" drill="1.1176" diameter="1.8796" shape="long" rot="R90"/>
-<pad name="8" x="17.78" y="0" drill="1.1176" diameter="1.8796" shape="long" rot="R90"/>
+<pad name="1" x="0" y="0" drill="1.1176" diameter="1.6764" shape="long" rot="R90"/>
+<pad name="2" x="2.54" y="0" drill="1.1176" diameter="1.6764" shape="long" rot="R90"/>
+<pad name="3" x="5.08" y="0" drill="1.1176" diameter="1.6764" shape="long" rot="R90"/>
+<pad name="4" x="7.62" y="0" drill="1.1176" diameter="1.6764" shape="long" rot="R90"/>
+<pad name="5" x="10.16" y="0" drill="1.1176" diameter="1.6764" shape="long" rot="R90"/>
+<pad name="6" x="12.7" y="0" drill="1.1176" diameter="1.6764" shape="long" rot="R90"/>
+<pad name="7" x="15.24" y="0" drill="1.1176" diameter="1.6764" shape="long" rot="R90"/>
+<pad name="8" x="17.78" y="0" drill="1.1176" diameter="1.6764" shape="long" rot="R90"/>
 <text x="-1.3462" y="2.4638" size="1.27" layer="25" ratio="10">&gt;NAME</text>
 <text x="-1.27" y="-3.81" size="1.27" layer="27">&gt;VALUE</text>
 <rectangle x1="14.986" y1="-0.254" x2="15.494" y2="0.254" layer="51"/>
@@ -1514,9 +1514,9 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <package name="1X03_LONGPADS">
 <wire x1="-1.27" y1="0.635" x2="-1.27" y2="-0.635" width="0.2032" layer="21"/>
 <wire x1="6.35" y1="0.635" x2="6.35" y2="-0.635" width="0.2032" layer="21"/>
-<pad name="1" x="0" y="0" drill="1.1176" diameter="1.8796" shape="long" rot="R90"/>
-<pad name="2" x="2.54" y="0" drill="1.1176" diameter="1.8796" shape="long" rot="R90"/>
-<pad name="3" x="5.08" y="0" drill="1.1176" diameter="1.8796" shape="long" rot="R90"/>
+<pad name="1" x="0" y="0" drill="1.1176" diameter="1.6764" shape="long" rot="R90"/>
+<pad name="2" x="2.54" y="0" drill="1.1176" diameter="1.6764" shape="long" rot="R90"/>
+<pad name="3" x="5.08" y="0" drill="1.1176" diameter="1.6764" shape="long" rot="R90"/>
 <text x="-1.3462" y="2.4638" size="1.27" layer="25" ratio="10">&gt;NAME</text>
 <text x="-1.27" y="-3.81" size="1.27" layer="27">&gt;VALUE</text>
 <rectangle x1="4.826" y1="-0.254" x2="5.334" y2="0.254" layer="51"/>
@@ -1950,10 +1950,10 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <package name="1X04_LONGPADS">
 <wire x1="-1.27" y1="0.635" x2="-1.27" y2="-0.635" width="0.2032" layer="21"/>
 <wire x1="8.89" y1="0.635" x2="8.89" y2="-0.635" width="0.2032" layer="21"/>
-<pad name="1" x="0" y="0" drill="1.1176" diameter="1.8796" shape="long" rot="R90"/>
-<pad name="2" x="2.54" y="0" drill="1.1176" diameter="1.8796" shape="long" rot="R90"/>
-<pad name="3" x="5.08" y="0" drill="1.1176" diameter="1.8796" shape="long" rot="R90"/>
-<pad name="4" x="7.62" y="0" drill="1.1176" diameter="1.8796" shape="long" rot="R90"/>
+<pad name="1" x="0" y="0" drill="1.1176" diameter="1.6764" shape="long" rot="R90"/>
+<pad name="2" x="2.54" y="0" drill="1.1176" diameter="1.6764" shape="long" rot="R90"/>
+<pad name="3" x="5.08" y="0" drill="1.1176" diameter="1.6764" shape="long" rot="R90"/>
+<pad name="4" x="7.62" y="0" drill="1.1176" diameter="1.6764" shape="long" rot="R90"/>
 <text x="-1.3462" y="2.4638" size="1.27" layer="25" ratio="10">&gt;NAME</text>
 <text x="-1.27" y="-3.81" size="1.27" layer="27">&gt;VALUE</text>
 <rectangle x1="7.366" y1="-0.254" x2="7.874" y2="0.254" layer="51"/>
@@ -2361,10 +2361,6 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <text x="-1.27" y="2.54" size="0.4064" layer="25">&gt;NAME</text>
 <text x="-1.27" y="1.27" size="0.4064" layer="27">&gt;VALUE</text>
 </package>
-<package name="1X02_LONGPADS">
-<pad name="1" x="0" y="0" drill="1.1176" diameter="1.8796" shape="long" rot="R90"/>
-<pad name="2" x="2.54" y="0" drill="1.1176" diameter="1.8796" shape="long" rot="R90"/>
-</package>
 <package name="1X02_NO_SILK">
 <pad name="1" x="0" y="0" drill="1.016" diameter="1.8796" rot="R90"/>
 <pad name="2" x="2.54" y="0" drill="1.016" diameter="1.8796" rot="R90"/>
@@ -2527,6 +2523,10 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <text x="2.016" y="3" size="0.4064" layer="27">&gt;Value</text>
 <text x="0.616" y="0.75" size="1.27" layer="51">+</text>
 <text x="-1.384" y="0.75" size="1.27" layer="51">-</text>
+</package>
+<package name="1X02_LONGPADS">
+<pad name="1" x="0" y="0" drill="1.1176" diameter="1.6764" shape="long" rot="R90"/>
+<pad name="2" x="2.54" y="0" drill="1.1176" diameter="1.6764" shape="long" rot="R90"/>
 </package>
 </packages>
 <symbols>
