@@ -9,6 +9,6 @@ $(document).ready(function(){
 		    dataType:"text", 
 		}).done(function( result ) {
 		   	  var myLineChart = new Chart(ctx).Line(graph_data, graph_options);
-		   	  $("#test").html(string(result));
+		   	  $("#test").html(result);
 		});
 });
