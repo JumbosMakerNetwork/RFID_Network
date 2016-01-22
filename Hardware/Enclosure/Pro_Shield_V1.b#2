@@ -140,9 +140,9 @@
 <plain>
 <wire x1="58.42" y1="55.88" x2="55.88" y2="58.42" width="0.254" layer="20"/>
 <wire x1="55.88" y1="58.42" x2="5.08" y2="58.42" width="0.254" layer="20"/>
-<wire x1="5.08" y1="58.42" x2="0" y2="53.34" width="0.254" layer="20"/>
-<wire x1="0" y1="53.34" x2="0" y2="3.81" width="0.254" layer="20"/>
-<wire x1="0" y1="3.81" x2="3.81" y2="0" width="0.254" layer="20"/>
+<wire x1="5.08" y1="58.42" x2="-1.27" y2="50.8" width="0.254" layer="20"/>
+<wire x1="-1.27" y1="50.8" x2="-1.27" y2="5.08" width="0.254" layer="20"/>
+<wire x1="-1.27" y1="5.08" x2="3.81" y2="0" width="0.254" layer="20"/>
 <wire x1="3.81" y1="0" x2="53.34" y2="0" width="0.254" layer="20"/>
 <wire x1="53.34" y1="0" x2="58.42" y2="5.08" width="0.254" layer="20"/>
 <wire x1="58.42" y1="5.08" x2="58.42" y2="55.88" width="0.254" layer="20"/>
@@ -599,11 +599,9 @@ design rules under a new name.</description>
 <signal name="MOSI">
 <contactref element="JP1" pad="6"/>
 <contactref element="J1" pad="D11"/>
-<wire x1="52.07" y1="36.83" x2="52.705" y2="36.83" width="0.6096" layer="16"/>
-<wire x1="52.705" y1="36.83" x2="53.975" y2="35.56" width="0.6096" layer="16"/>
-<wire x1="53.975" y1="35.56" x2="53.975" y2="27.94" width="0.6096" layer="16"/>
-<wire x1="53.975" y1="27.94" x2="53.34" y2="27.305" width="0.6096" layer="16"/>
-<wire x1="53.34" y1="27.305" x2="41.275" y2="27.305" width="0.6096" layer="16"/>
+<wire x1="52.07" y1="36.83" x2="55.245" y2="36.83" width="0.6096" layer="16"/>
+<wire x1="55.245" y1="36.83" x2="55.245" y2="27.305" width="0.6096" layer="16"/>
+<wire x1="55.245" y1="27.305" x2="41.275" y2="27.305" width="0.6096" layer="16"/>
 <wire x1="41.275" y1="27.305" x2="40.64" y2="27.94" width="0.6096" layer="16"/>
 <wire x1="40.64" y1="27.94" x2="40.64" y2="29.845" width="0.6096" layer="16"/>
 <wire x1="40.64" y1="29.845" x2="38.1" y2="32.385" width="0.6096" layer="16"/>
@@ -645,24 +643,25 @@ design rules under a new name.</description>
 <polygon width="0.6096" layer="16" isolate="0.8128" thermals="no">
 <vertex x="60.325" y="59.055"/>
 <vertex x="5.08" y="58.42"/>
-<vertex x="0" y="53.34"/>
-<vertex x="0" y="3.81"/>
+<vertex x="-1.27" y="58.42"/>
+<vertex x="-1.27" y="5.08"/>
 <vertex x="3.81" y="0"/>
 <vertex x="53.34" y="0"/>
 <vertex x="58.42" y="5.08"/>
 </polygon>
 <wire x1="25.4" y1="20.32" x2="25.4" y2="15.24" width="0.6096" layer="16"/>
 <wire x1="25.4" y1="15.24" x2="25.4" y2="5.08" width="0.6096" layer="16"/>
-<wire x1="52.07" y1="44.45" x2="16.51" y2="49.53" width="0" layer="19" extent="1-1"/>
+<wire x1="16.51" y1="49.53" x2="52.07" y2="44.45" width="0" layer="19" extent="1-1"/>
+<wire x1="3.81" y1="30.48" x2="16.51" y2="35.56" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="MISO">
 <contactref element="J1" pad="D12"/>
 <contactref element="JP1" pad="5"/>
-<wire x1="52.07" y1="39.37" x2="52.705" y2="39.37" width="0.8128" layer="16"/>
-<wire x1="52.705" y1="39.37" x2="53.975" y2="40.64" width="0.6096" layer="16"/>
-<wire x1="53.975" y1="40.64" x2="53.975" y2="52.705" width="0.6096" layer="16"/>
-<wire x1="53.975" y1="52.705" x2="52.705" y2="53.975" width="0.6096" layer="16"/>
-<wire x1="52.705" y1="53.975" x2="46.99" y2="53.975" width="0.6096" layer="16"/>
+<wire x1="52.07" y1="39.37" x2="53.34" y2="39.37" width="0.8128" layer="16"/>
+<wire x1="53.34" y1="39.37" x2="55.245" y2="41.275" width="0.6096" layer="16"/>
+<wire x1="55.245" y1="41.275" x2="55.245" y2="52.07" width="0.6096" layer="16"/>
+<wire x1="55.245" y1="52.07" x2="53.34" y2="53.975" width="0.6096" layer="16"/>
+<wire x1="53.34" y1="53.975" x2="46.99" y2="53.975" width="0.6096" layer="16"/>
 <wire x1="46.99" y1="53.975" x2="40.005" y2="46.99" width="0.6096" layer="16"/>
 <wire x1="40.005" y1="46.99" x2="29.845" y2="46.99" width="0.6096" layer="16"/>
 <wire x1="29.845" y1="46.99" x2="21.59" y2="38.735" width="0.6096" layer="16"/>

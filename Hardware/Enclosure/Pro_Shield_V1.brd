@@ -640,8 +640,7 @@ design rules under a new name.</description>
 <contactref element="JP3" pad="2"/>
 <wire x1="3.81" y1="27.94" x2="3.81" y2="30.48" width="0.6096" layer="16"/>
 <polygon width="0.6096" layer="16" isolate="0.8128" thermals="no">
-<vertex x="60.325" y="59.055"/>
-<vertex x="5.08" y="58.42"/>
+<vertex x="58.42" y="58.42"/>
 <vertex x="-1.27" y="58.42"/>
 <vertex x="-1.27" y="5.08"/>
 <vertex x="3.81" y="0"/>
