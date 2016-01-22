@@ -6,7 +6,7 @@ $(document).ready(function(){
 			type:'get',
 		    url:"python/test.py",
 		    cache:false,
-		    dataType:text, 
+		    dataType:"text", 
 		}).done(function( result ) {
 		   	  var myLineChart = new Chart(ctx).Line(graph_data, graph_options);
 		   	  $("#test").html(string(result));
