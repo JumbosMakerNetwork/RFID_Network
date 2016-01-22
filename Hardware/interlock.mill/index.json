@@ -1,0 +1,192 @@
+{
+  "snapOnDrag" : true,
+  "millVersion" : 1,
+  "version" : 4,
+  "fixturing" : {
+    "spoilboard" : null,
+    "bracket" : null
+  },
+  "plans" : [
+    "2FF50CEB-0EC0-4A52-8E30-4ACA4B75E197",
+    "5B70F25D-E378-4498-BBC1-86CCDA460A58",
+    "26D4AB80-5E8F-418D-95B9-61122AB0F146",
+    "3E824A57-C749-487C-B942-6780879188E7"
+  ],
+  "stock" : {
+    "height" : 76.199,
+    "depth" : 1.54,
+    "flipped" : true,
+    "laminate" : "211D8AAC-F38A-48CA-B692-7004D3222719",
+    "offset" : {
+      "y" : 0,
+      "b" : 0,
+      "z" : 0,
+      "x" : 0,
+      "a" : 0,
+      "c" : 0
+    },
+    "width" : 101.6,
+    "name" : "(unknown)",
+    "zrotation" : 0
+  },
+  "displayUnits" : "mm",
+  "showDimensions" : true,
+  "otherplanVersionName" : "release-build",
+  "currentJobUUID" : null,
+  "tools" : [
+    {
+      "group" : "Endmill",
+      "conductive" : "yes",
+      "flutes" : 2,
+      "name" : "1\/16in Flat End Mill",
+      "profile" : [
+        [
+          3.175,
+          36.5,
+          0,
+          0
+        ],
+        [
+          3.175,
+          9.5,
+          0,
+          -1
+        ],
+        [
+          1.5875,
+          3.175,
+          0,
+          1
+        ],
+        [
+          1.5875,
+          0,
+          0,
+          1
+        ]
+      ],
+      "uuid" : "3FE64A6F-BFBC-4E48-8D48-9D7195783FDC"
+    },
+    {
+      "group" : "Endmill",
+      "conductive" : "yes",
+      "flutes" : 2,
+      "name" : "1\/16in Flat End Mill",
+      "profile" : [
+        [
+          3.175,
+          36.5,
+          0,
+          0
+        ],
+        [
+          3.175,
+          9.5,
+          0,
+          -1
+        ],
+        [
+          1.5875,
+          3.175,
+          0,
+          1
+        ],
+        [
+          1.5875,
+          0,
+          0,
+          1
+        ]
+      ],
+      "uuid" : "3FE64A6F-BFBC-4E48-8D48-9D7195783FDC"
+    },
+    {
+      "group" : "Endmill",
+      "conductive" : "yes",
+      "flutes" : 2,
+      "name" : "1\/16in Flat End Mill",
+      "profile" : [
+        [
+          3.175,
+          36.5,
+          0,
+          0
+        ],
+        [
+          3.175,
+          9.5,
+          0,
+          -1
+        ],
+        [
+          1.5875,
+          3.175,
+          0,
+          1
+        ],
+        [
+          1.5875,
+          0,
+          0,
+          1
+        ]
+      ],
+      "uuid" : "3FE64A6F-BFBC-4E48-8D48-9D7195783FDC"
+    },
+    {
+      "group" : "Endmill",
+      "conductive" : "yes",
+      "flutes" : 2,
+      "name" : "1\/16in Flat End Mill",
+      "profile" : [
+        [
+          3.175,
+          36.5,
+          0,
+          0
+        ],
+        [
+          3.175,
+          9.5,
+          0,
+          -1
+        ],
+        [
+          1.5875,
+          3.175,
+          0,
+          1
+        ],
+        [
+          1.5875,
+          0,
+          0,
+          1
+        ]
+      ],
+      "uuid" : "3FE64A6F-BFBC-4E48-8D48-9D7195783FDC"
+    }
+  ],
+  "showMotionPlan" : true,
+  "otherplanVersion" : "0.14.6",
+  "stepSize" : 0,
+  "laminates" : [
+    {
+      "uuid" : "211D8AAC-F38A-48CA-B692-7004D3222719",
+      "group" : "Circuit Board",
+      "maxDepth" : 1.8,
+      "name" : "Single-Sided FR-1 L2",
+      "minDepth" : 1,
+      "layers" : [
+        {
+          "fixed" : 0.1,
+          "material" : "copper"
+        },
+        {
+          "float" : 1.44,
+          "material" : "phenolic"
+        }
+      ]
+    }
+  ]
+}
