@@ -10,6 +10,7 @@ $(document).ready(function(){
 		}).done(function(result) {
 	  			makeGraph(result);
 			});
+});
 
 function makeGraph(file_data) {
 
@@ -45,5 +46,4 @@ function makeGraph(file_data) {
 	        }
 	    ]
 	};
-	var myLineChart = new Chart(ctx).Line(graph_data, graph_options);
-}
+	var myLineChart = new Chart(ctx).Line(graph_data, graph_options);}
