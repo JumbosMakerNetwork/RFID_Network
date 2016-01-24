@@ -20,6 +20,7 @@ function makeGraph(file_data) {
 	for (var i = 0; i < len; i++) {
 			data_array[i] = parseInt(data_array[i]);
 	}
+	console.log(data_array);
 
 	var graph_data = {
 	    labels: ["September", "October", "November", "December", "January"],
