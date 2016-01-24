@@ -10,7 +10,7 @@ $(document).ready(function(){
 		}).done(makeGraph(file_data));
 });
 
-makeGraph(file_data) {
+function makeGraph(file_data) {
 
 	// split the file data string into an array
 	var data_array = file_data.split(",");
