@@ -7,46 +7,57 @@ $(document).ready(function(){
 		    url:"python/monthly_log_count.txt",
 		    cache:false,
 		    dataType:"text", 
-		}).done(function(result) {
-	  			makeGraph(result);
+		}).done(function(log_count) {
+			$.ajax({
+				type:'get',
+			    url:"python/user_signup_monthly.txt",
+			    cache:false,
+			    dataType:"text", 
+			}).done(function(user_count) {
+	  			makeGraph(log_count, user_count);
 			});
 });
 
-function makeGraph(file_data) {
+user_signup_monthly.txt
+function makeGraph(log_count, user_count) {
 
 	// remove first pesky "["
-	file_data = file_data.substr(1);
+	log_count = log_count.substr(1);
+	user_count = user_count.substr(1);
 
 	// split the file data string into an array
-	var data_array = file_data.split(",");
+	var data_array1 = log_count.split(",");
+	var data_array2 = user_count.split(",");
 	var len = data_array.length;
 	for (var i = 0; i < len; i++) {
-			data_array[i] = parseInt(data_array[i]);
+			data_array1[i] = parseInt(data_array1[i]);
+			data_array2[i] = parseInt(data_array2[i]);
 	}
-	console.log(data_array);
+	console.log(data_array1);
+	console.log(data_array2);
 
 	var graph_data = {
 	    labels: ["September", "October", "November", "December", "January"],
 	    datasets: [
 	        {
-	            label: "My First dataset",
+	            label: "Usage Log per Month",
 	            fillColor: "rgba(220,220,220,0.2)",
 	            strokeColor: "rgba(220,220,220,1)",
 	            pointColor: "rgba(220,220,220,1)",
 	            pointStrokeColor: "#fff",
 	            pointHighlightFill: "#fff",
 	            pointHighlightStroke: "rgba(220,220,220,1)",
-	            data: data_array
+	            data: data_array1
 	        },
 	        {
-	            label: "My Second dataset",
+	            label: "User Signups per Month",
 	            fillColor: "rgba(151,187,205,0.2)",
 	            strokeColor: "rgba(151,187,205,1)",
 	            pointColor: "rgba(151,187,205,1)",
 	            pointStrokeColor: "#fff",
 	            pointHighlightFill: "#fff",
 	            pointHighlightStroke: "rgba(151,187,205,1)",
-	            data: [28, 48, 40, 19, 86]
+	            data: data_array2
 	        }
 	    ]
 	};
