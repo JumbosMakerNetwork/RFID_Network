@@ -16,6 +16,7 @@ $(document).ready(function(){
 			}).done(function(user_count) {
 	  			makeGraph(log_count, user_count);
 			});
+		});
 });
 
 user_signup_monthly.txt
