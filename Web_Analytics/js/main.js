@@ -7,8 +7,9 @@ $(document).ready(function(){
 		    url:"python/monthly_log_count.txt",
 		    cache:false,
 		    dataType:"text", 
-		}).done(makeGraph(file_data));
-});
+		}).done(function(result) {
+	  			makeGraph(result);
+			});
 
 function makeGraph(file_data) {
 
