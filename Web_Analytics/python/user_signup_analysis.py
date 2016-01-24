@@ -29,6 +29,8 @@ def dec():
 
 def jan():
     month_logs[4] += 1
+def other():
+    pass
 
 
 # map the inputs to the function blocks
@@ -37,6 +39,13 @@ options = {1 : jan,
            10 : oc,
            11 : nov,
            12 : dec,
+           2: other,
+           3: other,
+           4: other,
+           5: other,
+           6: other,
+           7: other,
+           8: other
 }
 
 try:
@@ -55,10 +64,10 @@ try:
     user_list = cursor.fetchall()
 
     numUsers = 0
-    for log in log_list:
+    for user in user_list:
         cur_month = (user_list[numUsers][7]).month
         options[cur_month]()
-        numLogs+=1
+        numUsers+=1
 
     print "Usage log report: "
     print "sept count: " + str(month_logs[0])
