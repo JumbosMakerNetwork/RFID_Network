@@ -19,7 +19,6 @@ $(document).ready(function(){
 		});
 });
 
-user_signup_monthly.txt
 function makeGraph(log_count, user_count) {
 
 	// remove first pesky "["
@@ -29,7 +28,7 @@ function makeGraph(log_count, user_count) {
 	// split the file data string into an array
 	var data_array1 = log_count.split(",");
 	var data_array2 = user_count.split(",");
-	var len = data_array.length;
+	var len = data_array1.length;
 	for (var i = 0; i < len; i++) {
 			data_array1[i] = parseInt(data_array1[i]);
 			data_array2[i] = parseInt(data_array2[i]);
