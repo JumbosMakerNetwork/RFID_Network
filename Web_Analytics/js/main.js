@@ -46,4 +46,6 @@ function makeGraph(file_data) {
 	        }
 	    ]
 	};
-	var myLineChart = new Chart(ctx).Line(graph_data, graph_options);}
+	var ctx = document.getElementById("usage_graph").getContext("2d");
+	var myLineChart = new Chart(ctx).Line(graph_data, graph_options);
+}
