@@ -15,7 +15,7 @@ $(document).ready(function(){
 function makeGraph(file_data) {
 
 	// remove first pesky "["
-	data_array = data_array.substr(1);
+	file_data = file_data.substr(1);
 
 	// split the file data string into an array
 	var data_array = file_data.split(",");
