@@ -14,7 +14,9 @@
  */
 
 String ST = "S0>";
-String ID = "420c0e11";
+String ID0 = "XXXXXXXX";
+String ID1 = "420c0e11";
+String ID2 = "39BC6D91";
 
 // the setup function runs once when you press reset or power the board
 void setup() {
@@ -25,11 +27,23 @@ void setup() {
 
 // the loop function runs over and over again forever
 void loop() {
-  digitalWrite(13, HIGH);   // turn the LED on (HIGH is the voltage level)
-  delay(100);              // wait for a second
-  String testing = ST + ID; 
-  Serial.println (testing); // Test send of an RFID read
-  delay(50);              // wait for a second
-  digitalWrite(13, LOW);    // turn the LED off by making the voltage LOW
-  delay(1000);              // wait for a second
+  sendID(ID0);
+  sendID(ID1);
+  sendID(ID0);
+  sendID(ID2);
+
 }
+
+
+void sendID(String ID)
+{
+  digitalWrite(13, HIGH);
+  delay(100);
+  digitalWrite(13, LOW);
+  for (int i=0; i <= 100; i++)
+  {
+    Serial.println(ID);
+    delay(50);
+  }
+}
+
