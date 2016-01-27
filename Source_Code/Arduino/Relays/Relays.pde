@@ -2,7 +2,7 @@
 #include <MFRC522.h>
 #include <SoftwareSerial.h>
 
-// WARNING, WARNING ... DANGER, WILL ROBINSON, DANGER!!!
+// WARNING, WARNING ..... DANGER, WILL ROBINSON, DANGER!!!
 // The station ID is unique to each terminal and must be manually entered.
 // Double and triple check this value is what you intend it to be.
 //#define SID 2  // Station ID number  - needs to correlate with database setting
@@ -16,7 +16,7 @@ const char SSID[] = "tuftswireless";
 const char PSK[] = ""; 
 // // Static IP of the directory location
 const char DBIP[] = "130.64.17.0";
-#define STID 1                  // Station ID number
+#define STID 4                  // Station ID number (soldering station)
 
 #define RST_PIN   5   // 
 #define SS_PIN    10  // 
@@ -34,8 +34,8 @@ String info = "";
 
 //// Hardware assignments /////
 ///////////////////////////////
-SoftwareSerial ESP8266(8, 9); // D9 -> ESP8266 RX, D10 -> ESP8266 TX
-SoftwareSerial LCD(3,2);        // D2 -> LCD TX, D3 -> LCD RX (unused)
+SoftwareSerial ESP8266(8, 9); // D8 -> ESP8266 RX, D9 -> ESP8266 TX
+SoftwareSerial LCD(2,3);        // D2 -> LCD TX, D3 -> LCD RX (unused)
 const int greenLED = 7;
 const int redLED = 6;
 const int relayPin = 4;
@@ -51,7 +51,6 @@ unsigned long t1 = 0;
 String timer = "";
 
 void setup() {
-  display("Welcome", "");
   pinMode(redLED, OUTPUT);
   pinMode(greenLED, OUTPUT);
   pinMode(relayPin, OUTPUT);
@@ -66,18 +65,21 @@ void setup() {
   LCD.begin(9600);      // With the LCD for external displays
   ESP8266.begin(9600);
 
-  while(!ESP8266_Check()){}
-  Serial.println("esp8266 checked!");
-  while( !ESP8266_Mode(3) ){}
-  Serial.println("esp8266 set to mode 3!");
-  while( !connectWiFi() ){}
-  Serial.println("esp8266 successfully connected to wifi!");
+  display("Welcome", "");
 
-  delay(500);
-  display("Waiting for", "RFID..");
+  Serial.println(F("checking esp8266!"));
+  while(!ESP8266_Check()){}
+  Serial.println(F("esp8266 checked!"));
+  while( !ESP8266_Mode(3) ){}
+  Serial.println(F("esp8266 set to mode 3!"));
+  while( !connectWiFi() ){}
+  Serial.println(F("esp8266 successfully connected to wifi!"));
 
   SPI.begin();      
-  RFID.PCD_Init();     
+  RFID.PCD_Init(); 
+
+  delay(500);
+  display("Waiting for", "RFID..");    
 
   // Prepare the key (used both as key A and as key B)
   // using FFFFFFFFFFFFh which is the default at chip delivery from the factory
@@ -89,101 +91,144 @@ void setup() {
 
 
 void loop() {
-  delay(1000);
+    delay(1000);
+    unsigned long counter = 0;
+    unsigned int period = 32768;  
 
-  do {
-    //for debugging: wait for serial commands while looping
-    while(ESP8266.available()) Serial.write(ESP8266.read());
-    while(Serial.available()) ESP8266.write(Serial.read());
+    do {
+        //for debugging: wait for serial commands while looping
+        while(ESP8266.available()) Serial.write(ESP8266.read());
+        while(Serial.available()) ESP8266.write(Serial.read());
 
-  } while ( !getPICC() && (digitalRead(OVRD) == initKeyState) );
+        /*delay a tenth of a second, then increment counter, and check wifi periodically
+          this makes use of bitwise operations instead of modulo and greater than 4 bil
+          comparisons which significantly improves performance 
+          The first checks whether counter is a multiple of the period, the second 
+          checks whether the counter is greater than 2^31 (2bill) so it can reset. */
 
-  if(digitalRead(OVRD) != initKeyState){   //if the keyState != what it was originally set to, i.e. the key has been turned
-    override();
-  }
+        delay(100); 
+        counter++;
+        if(counter & period) {
+           if (counter & (1<<31)) { 
+                  counter = 0;
+           }
+
+           if( !connectWiFi() ) {
+                  display("Wifi", "Disconnected");
+                  while(!connectWiFi()) {}
+                  display("Wifi", "Connected");
+                  delay(200);
+                  //ReqJMN( "0", "3", "Wifi disconnect");
+                  //delay(200);
+                  display("Waiting for", "RFID..");
+           }
+      }
+
+    } while ( !getPICC()  && (digitalRead(OVRD) == initKeyState) );
+
+    if(digitalRead(OVRD) != initKeyState){   //if the keyState != what it was originally set to, i.e. the key has been turned
+                  override();
+    }
   
-  Serial.println(F("An RFID has been detected"));
-  RFID_UID = GetRFID(RFID.uid.uidByte, RFID.uid.size);
-  info = "Station Name Here";
-  req = "1";     //req is 1, we're querying DB, looking for info back
-  display("Welcome!", "RFID Detected!");
+    Serial.println(F("An RFID has been detected"));
+    RFID_UID = GetRFID(RFID.uid.uidByte, RFID.uid.size);
+    info = "begin";
+    req = "1";     //req is 1, we're querying DB, looking for info back
+    display("Welcome!", "RFID Detected!");
 
-  // RFID.PICC_HaltA();       // Halt PICC
-  // RFID.PCD_StopCrypto1();  // Stop encryption on PCD
+    // RFID.PICC_HaltA();       // Halt PICC
+    // RFID.PCD_StopCrypto1();  // Stop encryption on PCD
 
-  String resp = ReqJMN( RFID_UID, req, info);
-  Serial.println(resp);
+    String resp = ReqJMN( RFID_UID, req, info);
+    Serial.println(resp);
 
-  if(req == "1" || req == "3"){   // If this is a signin or a server query
-      if (resp[0]== 'T')
-      {
-        digitalWrite(greenLED, HIGH);
-        String name = getName(resp);
+    if(req == "1" || req == "3"){   // If this is a signin or a server query
+        if (resp[0]== 'T')
+        {
+          digitalWrite(greenLED, HIGH);
+          String name = getName(resp);
 
-        display("Welcome", name);
-        delay(1000);
-        display("Permission","Granted!");
-        delay(1000);
-        digitalWrite(greenLED, LOW);
-        prevRFID_UID = RFID_UID;
+          display("Welcome", name);
+          delay(1000);
+          display("Permission","Granted!");
+          delay(1000);
+          digitalWrite(greenLED, LOW);
+          prevRFID_UID = RFID_UID;
 
-        beginUse();
-      }
-      else if (resp[0] == 'F')
-      {
-        digitalWrite(redLED, HIGH);  
-        display("Insufficient","credentials");
-        delay(1000);
-        display("Get approved at","maker.tufts.edu");
-        digitalWrite(relayPin, LOW);
-
-      }
-      else if (resp[0] == 'E')
-      {
-        // Blink the red light and give an error message.
-        // Display a warning to get a staff member. 
-          display("No ID found","in Database");
-          digitalWrite(relayPin, LOW);
+          beginUse();
+        }
+        else if (resp[0] == 'F')
+        {
           digitalWrite(redLED, HIGH);  
+          display("Insufficient","credentials");
           delay(1000);
-          display("Get approved at","maker.tufts.edu"); 
-          digitalWrite(redLED, LOW);
-          delay(1000);
-      }
-  }
-  display("Waiting for", "RFID..");
+          display("Get approved at","maker.tufts.edu");
+          digitalWrite(relayPin, LOW);
+
+        }
+        else if (resp[0] == 'E')
+        {
+          // Blink the red light and give an error message.
+          // Display a warning to get a staff member. 
+            display("No ID found","in Database");
+            digitalWrite(relayPin, LOW);
+            digitalWrite(redLED, HIGH);  
+            delay(1000);
+            display("Get approved at","maker.tufts.edu"); 
+            digitalWrite(redLED, LOW);
+            delay(1000);
+        }
+    }
+    display("Waiting for", "RFID..");
 }
 
 void beginUse(){
   t0 = millis();
   digitalWrite(greenLED, HIGH);
   digitalWrite(relayPin, HIGH);
-  display("Please print file.","");
+  display("Commence","Use...");
   
-  for(int i = 30; i > 0; i--) {
-      char c = i;
-      String s = String(i);
-      display("Print file now", s);
-      delay(1000);
+  Serial.println(F("before while loop"));
+  Serial.println ( RFID.PICC_IsNewCardPresent() );
+  Serial.println ( RFID.PICC_ReadCardSerial() );
+
+  while( getPICC() ){ //while the RFID engaged is the same as before
+        Serial.println(F("in while loop"));
+        Serial.println(RFID_UID);
+        Serial.println( GetRFID(RFID.uid.uidByte, RFID.uid.size) );
+        Serial.println( RFID.PICC_IsNewCardPresent() );
+        Serial.println( RFID.PICC_ReadCardSerial() );
+        //give access for 10 seconds...
+        display("Commence","Use..");
+        delay(2000);  //give access for 2 secs
+        display("Commence","Use...");
+        delay(2000);  //give access for 2 secs
+        display("Commence","Use....");
+        delay(2000);  //give access for 2 secs
+        display("Commence","Use.....");
+        delay(2000);  //give access for 2 secs
+        display("Commence","Use......");
+        delay(2000);  //give access for 2 secs
   }
   endUse();
 }
 
 void endUse(){
-  display("Goodbye!", "Signed out!");
+      display("Goodbye!", "Signed out!");
       t1 = millis();
       t1 = t1-t0;
       t1 = t1/1000; //this gives us seconds since signin
+
       digitalWrite(greenLED, LOW);
       prevRFID_UID = "";
       digitalWrite(relayPin, LOW);
 
       req = "2";      //Req is 2, we are just logging the time spent to the server
-      info = "Time at *station*: "+String(t1); // send seconds spent at station to server
-      Serial.println("seconds elapsed: ");
+      info = "station"+String(STID)+":"+String(t1); // send seconds spent at station to server
+      Serial.println(F("seconds elapsed: "));
       Serial.println(info);
       ReqJMN( RFID_UID, req, info);
-      delay(3000);
+      delay(1000);
 }
 
 
@@ -205,7 +250,7 @@ int getPICC() {
 }
 
 String GetRFID(byte *buffer, byte bufferSize) {
-  Serial.println("Get RFID called.");
+  Serial.println(F("Get RFID called."));
   String tmp = "";
   String tmp2;
   for (byte i = 0; i < bufferSize; i++) {
@@ -343,10 +388,10 @@ String ReqJMN(String RFID1, String req1, String info1)
   Serial.println(httpReq);
   //  Send AT command to ESP8266
   // Start connection - 
-  Serial.println("CIPStart...");
-  Serial.print("AT+CIPSTART=\"TCP\",\"");
+  Serial.println(F("CIPStart..."));
+  Serial.print(F("AT+CIPSTART=\"TCP\",\""));
   Serial.print(DBIP);
-  Serial.print("\",80\r\n");
+  Serial.print(F("\",80\r\n"));
 
   ESP8266.print("AT+CIPSTART=\"TCP\",\"");
   ESP8266.print(DBIP);
@@ -367,8 +412,7 @@ String ReqJMN(String RFID1, String req1, String info1)
   }
 
   // Send request - 
-  Serial.println("CIPSEND...");
-  Serial.print("AT+CIPSEND="); 
+  Serial.print(F("AT+CIPSEND=")); 
   Serial.print(httpReq.length());
   Serial.print("\r\n");
 
@@ -379,26 +423,27 @@ String ReqJMN(String RFID1, String req1, String info1)
   delay(500);
 
   if(ESP8266.find("OK")){
-    Serial.println("Sent Request - ");
+    Serial.println(F("Sent Request - "));
     Serial.print(httpReq);
     ESP8266.print(httpReq);
   }
   else{
-    Serial.println("No request sent. Try again.");
+    Serial.println(F("No request sent. Try again."));
   }
 
   int j = 0;
+  Serial.println(F("Attempting now..."));
   while(!ESP8266.find("JMNR:"));
   {
     j++;
     Serial.print(j);
     if (j>50){
-      Serial.println("Error - could not find JMNR");
+      Serial.println(F("Error - could not find JMNR"));
       return "Error - could not find JMNR";
     }
   }
 
-  Serial.println("Found JMNR:...");
+  Serial.println(F("Found JMNR:..."));
   for (int i = 0; i<=18; i++)
   {
     while(!ESP8266.available());
@@ -407,7 +452,7 @@ String ReqJMN(String RFID1, String req1, String info1)
     resp.concat(z);
   }
 
-  Serial.println("<-- END");
+  Serial.println(F("<-- END"));
   
   return resp;
 }
@@ -460,7 +505,7 @@ void override(){
 }
 
 String getName(String response){
-  Serial.println("In getname");
+  Serial.println(F("In getname"));
   response.remove(0,2);   //removes 'T' and a whitespace, also, this fxn is
                           //pass by copy, so we're not altering the reponse from before
   Serial.println(response);
