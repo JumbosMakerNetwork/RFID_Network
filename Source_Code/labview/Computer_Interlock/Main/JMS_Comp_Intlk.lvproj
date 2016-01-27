@@ -13,6 +13,7 @@
 		<Item Name="Check_Database.vi" Type="VI" URL="../Check_Database.vi"/>
 		<Item Name="GetAllSerialComm.vi" Type="VI" URL="../GetAllSerialComm.vi"/>
 		<Item Name="Main_Intlk.vi" Type="VI" URL="../Main_Intlk.vi"/>
+		<Item Name="Name_Display.ctl" Type="VI" URL="../Name_Display.ctl"/>
 		<Item Name="Read_Resource.vi" Type="VI" URL="../Read_Resource.vi"/>
 		<Item Name="Secret_Code.vi" Type="VI" URL="../Secret_Code.vi"/>
 		<Item Name="Dependencies" Type="Dependencies">
