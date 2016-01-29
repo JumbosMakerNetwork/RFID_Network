@@ -1,10 +1,17 @@
 
 var graph_options = {
+
+    // added by WD
+    responsive : true,
+    animation : true,
+    multiTooltipTemplate: "<%= datasetLabel %> - <%= value %>"
+
+    //
     ///Boolean - Whether grid lines are shown across the chart
     scaleShowGridLines : true,
 
     //String - Colour of the grid lines
-    scaleGridLineColor : "rgba(0,0,0,.05)",
+    scaleGridLineColor : "rgba(0,0,0,.1)",
 
     //Number - Width of the grid lines
     scaleGridLineWidth : 1,
