@@ -16,7 +16,7 @@ const char SSID[] = "tuftswireless";
 const char PSK[] = ""; 
 // // Static IP of the directory location
 const char DBIP[] = "130.64.17.0";
-#define STID 4                  // Station ID number (soldering station)
+#define STID 4                  // Station ID number (laser station)
 
 #define RST_PIN   5   // 
 #define SS_PIN    10  // 
@@ -163,6 +163,8 @@ void loop() {
           display("Insufficient","credentials");
           delay(1000);
           display("Get approved at","maker.tufts.edu");
+          delay(1000);
+          digitalWrite(redLED, LOW);
           digitalWrite(relayPin, LOW);
 
         }
