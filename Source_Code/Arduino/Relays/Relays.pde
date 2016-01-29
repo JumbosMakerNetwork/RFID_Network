@@ -226,7 +226,7 @@ void endUse(){
       digitalWrite(relayPin, LOW);
 
       req = "2";      //Req is 2, we are just logging the time spent to the server
-      info = "station"+String(STID)+":"+String(t1); // send seconds spent at station to server
+      info = String(t1); // send seconds spent at station to server
       Serial.println(F("seconds elapsed: "));
       Serial.println(info);
       ReqJMN( RFID_UID, req, info);
