@@ -4,7 +4,7 @@ var graph_options = {
     // added by WD
     responsive : true,
     animation : true,
-    multiTooltipTemplate: "<%= datasetLabel %> - <%= value %>"
+    multiTooltipTemplate: "<%= datasetLabel %> - <%= value %>",
 
     //
     ///Boolean - Whether grid lines are shown across the chart
