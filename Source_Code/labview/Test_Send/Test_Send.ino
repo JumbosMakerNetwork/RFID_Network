@@ -13,10 +13,9 @@
   by Scott Fitzgerald
  */
 
-String ST = "S0>";
 String ID0 = "XXXXXXXX";
 String ID1 = "420c0e11";
-String ID2 = "39BC6D91";
+String ID2 = "39Bc6d91";
 
 // the setup function runs once when you press reset or power the board
 void setup() {
@@ -40,7 +39,7 @@ void sendID(String ID)
   digitalWrite(13, HIGH);
   delay(100);
   digitalWrite(13, LOW);
-  for (int i=0; i <= 100; i++)
+  for (int i=0; i <= 300; i++)
   {
     Serial.println(ID);
     delay(50);
