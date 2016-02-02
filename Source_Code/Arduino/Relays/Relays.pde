@@ -16,7 +16,7 @@ const char SSID[] = "tuftswireless";
 const char PSK[] = ""; 
 // // Static IP of the directory location
 const char DBIP[] = "130.64.17.0";
-#define STID 4                  // Station ID number (laser station)
+#define STID 5                  // Station ID number (soldering)
 
 #define RST_PIN   5   // 
 #define SS_PIN    10  // 
@@ -62,7 +62,7 @@ void setup() {
 
   // Initialize Serial Communications
   Serial.begin(9600);   // with the PC for debugging displays
-  LCD.begin(9600);      // With the LCD for external displays
+  LCD_init();      // With the LCD for external displays
   ESP8266.begin(9600);
 
   display("Welcome", "");
@@ -84,7 +84,7 @@ void setup() {
   // Prepare the key (used both as key A and as key B)
   // using FFFFFFFFFFFFh which is the default at chip delivery from the factory
   for (byte i = 0; i < 6; i++) {
-    key.keyByte[i] = 0xFF;
+      key.keyByte[i] = 0xFF;
   }
   GetRFID(key.keyByte, MFRC522::MF_KEY_SIZE);
 }
@@ -122,11 +122,11 @@ void loop() {
                   //delay(200);
                   display("Waiting for", "RFID..");
            }
-      }
+        }
 
     } while ( !getPICC()  && (digitalRead(OVRD) == initKeyState) );
-
-    if(digitalRead(OVRD) != initKeyState){   //if the keyState != what it was originally set to, i.e. the key has been turned
+    //if the keyState != what it was originally set to, i.e. the key has been turned
+    if(digitalRead(OVRD) != initKeyState) {   
                   override();
     }
   
@@ -142,7 +142,8 @@ void loop() {
     String resp = ReqJMN( RFID_UID, req, info);
     Serial.println(resp);
 
-    if(req == "1" || req == "3"){   // If this is a signin or a server query
+    // If this is a signin or a server query
+    if(req == "1" || req == "3") {   
         if (resp[0]== 'T')
         {
           digitalWrite(greenLED, HIGH);
@@ -184,7 +185,8 @@ void loop() {
     display("Waiting for", "RFID..");
 }
 
-void beginUse(){
+void beginUse() 
+{
   t0 = millis();
   digitalWrite(greenLED, HIGH);
   digitalWrite(relayPin, HIGH);
@@ -194,7 +196,8 @@ void beginUse(){
   Serial.println ( RFID.PICC_IsNewCardPresent() );
   Serial.println ( RFID.PICC_ReadCardSerial() );
 
-  while( getPICC() ){ //while the RFID engaged is the same as before
+  //while the RFID engaged is the same as before
+  while( getPICC() ) { 
         Serial.println(F("in while loop"));
         Serial.println(RFID_UID);
         Serial.println( GetRFID(RFID.uid.uidByte, RFID.uid.size) );
@@ -215,22 +218,23 @@ void beginUse(){
   endUse();
 }
 
-void endUse(){
-      display("Goodbye!", "Signed out!");
-      t1 = millis();
-      t1 = t1-t0;
-      t1 = t1/1000; //this gives us seconds since signin
+void endUse()
+{
+    display("Goodbye!", "Signed out!");
+    t1 = millis();
+    t1 = t1-t0;
+    t1 = t1/1000; //this gives us seconds since signin
 
-      digitalWrite(greenLED, LOW);
-      prevRFID_UID = "";
-      digitalWrite(relayPin, LOW);
+    digitalWrite(greenLED, LOW);
+    prevRFID_UID = "";
+    digitalWrite(relayPin, LOW);
 
-      req = "2";      //Req is 2, we are just logging the time spent to the server
-      info = String(t1); // send seconds spent at station to server
-      Serial.println(F("seconds elapsed: "));
-      Serial.println(info);
-      ReqJMN( RFID_UID, req, info);
-      delay(1000);
+    req = "2";      //Req is 2, we are just logging the time spent to the server
+    info = String(t1); // send seconds spent at station to server
+    Serial.println(F("seconds elapsed: "));
+    Serial.println(info);
+    ReqJMN( RFID_UID, req, info);
+    delay(1000);
 }
 
 
@@ -273,18 +277,16 @@ boolean ESP8266_Check()
 {
   ESP8266.println("AT");
   delay(500);
-  if(ESP8266.find("OK"))
-  {
+
+  if(ESP8266.find("OK")) {
     Serial.println(F("RECEIVED: OK"));
     return true;
   }
-  else if(ESP8266.find("ERROR"))
-  {
+  else if(ESP8266.find("ERROR")) {
     Serial.println(F("RECEIVED: Error"));
     return false;
   }
-  else
-  {
+  else {
     Serial.println(F("RECEIVED: No Response"));
     delay(1000);
     void(* resetFunc) (void) = 0;
@@ -297,25 +299,23 @@ boolean ESP8266_Check()
 boolean ESP8266_Mode(int mode)
 {
   ESP8266.println(F("AT+CWMODE?"));
-  if(ESP8266.find(mode)) // Might have to conver mode from an int to a char
-  {
+  if(ESP8266.find(mode)) {
     Serial.print(F("Mode already set"));
     return true;
   }
+
   ESP8266.print(F("AT+CWMODE="));
   ESP8266.println(mode);
-    if(ESP8266.find("OK"))
-  {
+
+  if(ESP8266.find("OK")) {
     Serial.println(F("RECEIVED: OK"));
     return true;
   }
-  else if(ESP8266.find("ERROR"))
-  {
+  else if(ESP8266.find("ERROR")) {
     Serial.println(F("RECEIVED: Error"));
     return false;
   }
-  else
-  {
+  else {
     Serial.println(F("RECEIVED: No Response"));
     void(* resetFunc) (void) = 0;
     resetFunc();
@@ -327,11 +327,10 @@ boolean ESP8266_Mode(int mode)
 
 boolean connectWiFi(){
   ESP8266.println("AT+CWJAP?");
-  if(ESP8266.find("tuftswireless")) //can't convert const char[] to string, replacing w 'tuftswireless'
-  {
-    while(ESP8266.available()) Serial.write(ESP8266.read());
-    Serial.println(F("Already connected"));
-    return true;
+  if(ESP8266.find(F("tuftswireless"))) {
+      while(ESP8266.available()) Serial.write(ESP8266.read());
+      Serial.println(F("Already connected"));
+      return true;
   }
   delay(100);
   String cmd="AT+CWJAP=\"";
@@ -342,23 +341,20 @@ boolean connectWiFi(){
   ESP8266.println(cmd);
   Serial.println(cmd);
   delay(800);
-  while ( !ESP8266.available() ){
+  while (!ESP8266.available()) {
     delay(100);
   }
 
-  if(ESP8266.find("OK"))
-  {
+  if(ESP8266.find("OK")) {
     Serial.println(F("RECEIVED: OK"));
     ESP8266.flush();
     return true;
   }
-  else if(ESP8266.find("ERROR"))
-  {
+  else if(ESP8266.find("ERROR")) {
     Serial.println(F("RECEIVED: Error"));
     return false;
   }
-  else
-  {
+  else {
     Serial.println(F("RECEIVED: Couldn't connect to wifi; no response"));
     // void(* resetFunc) (void) = 0;
     // resetFunc();
@@ -370,13 +366,10 @@ boolean connectWiFi(){
 
 String ReqJMN(String RFID1, String req1, String info1)
 {
-  // int n = 18;
   String resp="";
   char z;
   Serial.println(F("Starting request..."));
-  // May need to set up connection with AT+CIPMUX=0
-  // Set up necessary command strings
-  // Need length of http request first
+
   String httpReq = "GET /RFID.php?stid=";
   httpReq += STID; // Universal constant
   httpReq += "&rfid=";
@@ -388,6 +381,7 @@ String ReqJMN(String RFID1, String req1, String info1)
   httpReq += " HTTP/1.0\r\n\r\n";
   delay(50);
   Serial.println(httpReq);
+
   //  Send AT command to ESP8266
   // Start connection - 
   Serial.println(F("CIPStart..."));
@@ -400,16 +394,13 @@ String ReqJMN(String RFID1, String req1, String info1)
   ESP8266.print("\",80\r\n");
   
   delay(100);
-  if(ESP8266.find("OK"))
-  {
+  if(ESP8266.find("OK")) {
     Serial.println(F("CIPSTART: OK"));
   }
-  else if(ESP8266.find("ERROR"))
-  {
+  else if(ESP8266.find("ERROR")) {
     Serial.println(F("CIPSTART: Error"));
   }
-  else
-  {
+  else {
     Serial.println(F("CIPSTART: No Response"));
   }
 
@@ -424,30 +415,28 @@ String ReqJMN(String RFID1, String req1, String info1)
   // while(ESP8266.available()) Serial.write(ESP8266.read());
   delay(500);
 
-  if(ESP8266.find("OK")){
+  if(ESP8266.find("OK")) {
     Serial.println(F("Sent Request - "));
     Serial.print(httpReq);
     ESP8266.print(httpReq);
   }
-  else{
+  else {
     Serial.println(F("No request sent. Try again."));
   }
 
   int j = 0;
   Serial.println(F("Attempting now..."));
-  while(!ESP8266.find("JMNR:"));
-  {
+  while(!ESP8266.find("JMNR:")) {
     j++;
     Serial.print(j);
-    if (j>50){
+    if (j>50) {
       Serial.println(F("Error - could not find JMNR"));
       return "Error - could not find JMNR";
     }
   }
 
   Serial.println(F("Found JMNR:..."));
-  for (int i = 0; i<=18; i++)
-  {
+  for (int i = 0; i<=18; i++) {
     while(!ESP8266.available());
     z = (char)ESP8266.read();
     Serial.write(z);
@@ -464,6 +453,21 @@ String ReqJMN(String RFID1, String req1, String info1)
 ////////////////////////////////////////////////////////////////////////
 ////////////////// MISC UTILITIES ///////////////////////////////////
 //////////////////////////////////////////////////////
+
+void LCD_init() 
+{
+      // Initialize the display
+      LCD.begin(9600);      // With the LCD for external displays
+      delay(100); // wait for display to boot up
+      LCD.write(0x12); // Makes sure the display is running at 9600 Baud
+      delay(10);
+      LCD.write(0x0C); // Turn Display on
+      delay(10);
+      LCD.write(0x7C); // Command Character
+      delay(10);
+      LCD.write(157); // Full Brightness
+      delay(10);
+}
 
 // Function for sending strings to the display
 void display(String Line1, String Line2)
@@ -491,22 +495,27 @@ void display(String Line1, String Line2)
   delay(25);
 }
 
-void override(){
+void override()
+{
   display("OVERRIDE","");
   digitalWrite(redLED, HIGH);
   digitalWrite(greenLED, HIGH);
-  digitalWrite(relayPin, HIGH);
-  // ~this is where we would put code to supply power to the relays and bypass the permissions checks
-  while(digitalRead(OVRD) != initKeyState){
+  digitalWrite(relayPin, HIGH); 
+
+  while(digitalRead(OVRD) != initKeyState) {
     // While the key state is not what it was at the initialization of the program
     // turn the key back to original state to end the override
-    delay(20000); //delay 20 seconds so not looping unneccessarily
+    delay(20000); 
 
   }
   digitalWrite(relayPin, LOW);
+  digitalWrite(redLED, LOW);
+  digitalWrite(greenLED, LOW);
+
 }
 
-String getName(String response){
+String getName(String response)
+{
   Serial.println(F("In getname"));
   response.remove(0,2);   //removes 'T' and a whitespace, also, this fxn is
                           //pass by copy, so we're not altering the reponse from before
@@ -514,8 +523,8 @@ String getName(String response){
 
   //find whitespace after name
   int k = 0;
-  for(k; k < response.length(); k++){
-      if(response[k] == ' '){
+  for(k; k < response.length(); k++) {
+      if(response[k] == ' ') {
         break;
       }
   }
@@ -527,15 +536,16 @@ String getName(String response){
   return response;
 }
 
-String center(String toCenter){
+String center(String toCenter)
+{
   // Center the string for the display
   int a = toCenter.length();
   a = a + (a % 2);  //makes divisible by 2
   a = 16 - a;
   a = a/2;
   String center1 = "";
-  for (a; a > 0; a--){    //for loop concatenates whitespaces to beginning of new array
-    center1 += ' ';
+  for (a; a > 0; a--) {    //for loop concatenates whitespaces to beginning of new array
+      center1 += ' ';
   }
   center1 += toCenter;
   return center1;

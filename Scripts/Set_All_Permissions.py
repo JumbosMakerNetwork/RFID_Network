@@ -13,7 +13,7 @@ import string
 con = None
 
 try:
-    con = psycopg2.connect("host='130.64.17.0' dbname='JMN' user='xx' password='xx'") 
+    con = psycopg2.connect("host='130.64.17.0' dbname='JMN' user='xx' password='xx  '") 
 
     cur = con.cursor()    
     cur.execute("SELECT * FROM users")
@@ -27,7 +27,7 @@ try:
         # grab the uid, which is the data at index 0 for each item in the results array
         uid = user[0]
         for station in stations:
-            # grab the sid, same as uid
+            # grab the sid, same method as uid
             sid = station[0]
             exec_string = "SELECT * FROM permissions WHERE sid = {0} AND uid = {1}".format(sid, uid)
             cur.execute(exec_string)
