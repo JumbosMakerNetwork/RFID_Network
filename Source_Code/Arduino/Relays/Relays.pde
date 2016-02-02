@@ -327,7 +327,7 @@ boolean ESP8266_Mode(int mode)
 
 boolean connectWiFi(){
   ESP8266.println("AT+CWJAP?");
-  if(ESP8266.find(F("tuftswireless"))) {
+  if(ESP8266.find("tuftswireless")) {
       while(ESP8266.available()) Serial.write(ESP8266.read());
       Serial.println(F("Already connected"));
       return true;
