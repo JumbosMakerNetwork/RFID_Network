@@ -29,10 +29,13 @@ def dec():
 
 def jan():
     month_logs[4] += 1
+def feb():
+    pass
 
 
 # map the inputs to the function blocks
 options = {1 : jan,
+	   2 : feb,
            9 : sept,
            10 : oc,
            11 : nov,
