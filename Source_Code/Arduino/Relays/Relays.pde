@@ -62,6 +62,8 @@ void setup() {
 
   // Initialize Serial Communications
   Serial.begin(9600);   // with the PC for debugging displays
+  LCD.begin(9600);      // With the LCD for external displays
+  LCD.write(0x12); // Makes sure the display is running at 9600 Baud
   LCD_init();      // With the LCD for external displays
   ESP8266.begin(9600);
 
@@ -457,10 +459,6 @@ String ReqJMN(String RFID1, String req1, String info1)
 void LCD_init() 
 {
       // Initialize the display
-      LCD.begin(9600);      // With the LCD for external displays
-      delay(100); // wait for display to boot up
-      LCD.write(0x12); // Makes sure the display is running at 9600 Baud
-      delay(10);
       LCD.write(0x0C); // Turn Display on
       delay(10);
       LCD.write(0x7C); // Command Character
