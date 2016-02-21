@@ -49,7 +49,7 @@ options = {1 : jan,
 }
 
 try:
-    con_string = "host='130.64.17.0' dbname='JMN' user='dolanwill' password='password7'"
+    con_string = "host='130.64.17.0' dbname='JMN' user='dolanwill' password='xxx'"
  
     # dev: print the connection string we will use to connect
     # print "Connecting to database\n ->%s" % (con_string)
