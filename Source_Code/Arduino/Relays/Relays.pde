@@ -2,7 +2,6 @@
 #include <MFRC522.h>
 #include <SoftwareSerial.h>
 
-// WARNING, WARNING ..... DANGER, WILL ROBINSON, DANGER!!!
 // The station ID is unique to each terminal and must be manually entered.
 // Double and triple check this value is what you intend it to be.
 //#define SID 2  // Station ID number  - needs to correlate with database setting
@@ -548,4 +547,3 @@ String center(String toCenter)
   center1 += toCenter;
   return center1;
 }
-
