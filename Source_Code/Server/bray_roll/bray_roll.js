@@ -40,7 +40,7 @@ function addUserHTML(e) {
         color = "danger";
         break;
     default:
-        default color="";
+        color="";
 }
 	$('#roll_table_body').append('<tr class="'+color+'"id="'+e.timeArrived+'"><td>'+e.firstName+' '+e.lastName+'</td><td>'+e.timeArrived+'</td><td>'+e.expertise+'</tr>');
 }
