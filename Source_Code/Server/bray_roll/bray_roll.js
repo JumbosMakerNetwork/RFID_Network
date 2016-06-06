@@ -23,6 +23,7 @@ function executeQuery() {
     		if ($.inArray(e, roll.users) == -1){ 
 	    		//if the new element is not in roll{}, add it to HTML and roll.users
 	    		addUserHTML(e);
+          console.log(e);
 	    		roll.users.push(e)
     		}
     	}
@@ -37,6 +38,8 @@ $(document).ready(function() {
 });
 
 function addUserHTML(e) {
+  console.log('in add user html');
+  console.log(e);
 	$('#roll_table').append('<tr id="'+e.timeArrived+'"><td>'+e.firstName+' '+e.lastName+'</td><td>'+e.timeArrived+'</td><td>'+e.expertise+'</tr>');
 }
 function removeUserHTML(e) {
