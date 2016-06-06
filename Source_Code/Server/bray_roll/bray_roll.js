@@ -16,19 +16,33 @@ function executeQuery() {
     	}
     }
   });
-  setTimeout(executeQuery, 10000);
+  setTimeout(executeQuery, 5000);
 }
 
 $(document).ready(function() {
   // run executeQuery first time; all subsequent calls will take care of themselves
-  setTimeout(executeQuery, 5000);
+  executeQuery();
 });
 
 function flushUserHTML(){
   $('#roll_table_body').empty();
 }
 function addUserHTML(e) {
-	$('#roll_table_body').append('<tr id="'+e.timeArrived+'"><td>'+e.firstName+' '+e.lastName+'</td><td>'+e.timeArrived+'</td><td>'+e.expertise+'</tr>');
+  var color;
+  switch(e.expertise) {
+    case "green":
+        color = "success";
+        break;
+    case "yellow":
+        color = "warning";
+        break;
+    case "red":
+        color = "danger";
+        break;
+    default:
+        default color="";
+}
+	$('#roll_table_body').append('<tr class="'+color+'"id="'+e.timeArrived+'"><td>'+e.firstName+' '+e.lastName+'</td><td>'+e.timeArrived+'</td><td>'+e.expertise+'</tr>');
 }
 function removeUserHTML(e) {
 	$('#'+e.timeArrived).remove();
