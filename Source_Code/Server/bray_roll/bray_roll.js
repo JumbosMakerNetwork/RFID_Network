@@ -24,11 +24,11 @@ $(document).ready(function() {
   setTimeout(executeQuery, 5000);
 });
 
-funciton flushUserHTML(){
-
+function flushUserHTML(){
+  $('#roll_table_body').empty();
 }
 function addUserHTML(e) {
-	$('#roll_table').append('<tr id="'+e.timeArrived+'"><td>'+e.firstName+' '+e.lastName+'</td><td>'+e.timeArrived+'</td><td>'+e.expertise+'</tr>');
+	$('#roll_table_body').append('<tr id="'+e.timeArrived+'"><td>'+e.firstName+' '+e.lastName+'</td><td>'+e.timeArrived+'</td><td>'+e.expertise+'</tr>');
 }
 function removeUserHTML(e) {
 	$('#'+e.timeArrived).remove();
