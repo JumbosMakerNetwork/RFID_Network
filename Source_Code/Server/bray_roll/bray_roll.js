@@ -12,19 +12,18 @@ function executeQuery() {
     success: function(data) {
     	var new_roll = data;
     	for (var e in roll.users) {
-    		if ($.inArray(e, new_roll.users) == -1){ 
+    		if ($.inArray(roll.users[e], new_roll.users) == -1){ 
   	    		//if an old element is not in new_roll{}, take it out of HTML page and array
-  	    	removeUserHTML(e);
-  				var index = roll.users.indexOf(e);
-  				roll.users.splice(index, 1);
+  	    	removeUserHTML(roll.users[e]);
+  				roll.users.splice(e, 1);
   			}
     	}
     	for (var e in new_roll.users) {
-    		if ($.inArray(e, roll.users) == -1){ 
+    		if ($.inArray(new_roll.users[e], roll.users) == -1){ 
 	    		//if the new element is not in roll{}, add it to HTML and roll.users
-	    		addUserHTML(e);
-          console.log(e);
-	    		roll.users.push(e)
+	    		addUserHTML(new_roll.users[e]);
+          console.log(new_roll.users[e]);
+	    		roll.users.push(new_roll.users[e])
     		}
     	}
     }
