@@ -10,21 +10,21 @@ function executeQuery() {
   $.ajax({
     url: 'bray_roll.json',
     success: function(data) {
-    	var new_roll = JSON.parse(data);
+    	var new_roll = data;
     	for (var e in roll.users) {
     		if ($.inArray(e, new_roll.users) == -1){ 
-	    		//if an old element is not in new_roll{}, take it out of HTML page and array
-	    		removeUserHTML(e);
-				var index = roll.users.indexOf(e);
-				roll.users.splice(index, 1);
-			}
+  	    		//if an old element is not in new_roll{}, take it out of HTML page and array
+  	    	removeUserHTML(e);
+  				var index = roll.users.indexOf(e);
+  				roll.users.splice(index, 1);
+  			}
     	}
     	for (var e in new_roll.users) {
     		if ($.inArray(e, roll.users) == -1){ 
 	    		//if the new element is not in roll{}, add it to HTML and roll.users
 	    		addUserHTML(e);
 	    		roll.users.push(e)
-			}
+    		}
     	}
     }
   });
