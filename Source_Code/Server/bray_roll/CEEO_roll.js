@@ -8,7 +8,7 @@ var roll = {"users":[]};
 
 function executeQuery() {
   $.ajax({
-    url: 'bray_roll.json',
+    url: 'CEEO_roll.json',
     success: function(new_roll) {
       flushUserHTML();
     	for (var i in new_roll) {
@@ -28,14 +28,12 @@ function flushUserHTML(){
   $('#roll_table_body').empty();
 }
 function addUserHTML(e) {
-  var color = "";
-  if($.inArray("13", e.permissions))
-        color = "success";  
-  if($.inArray("14", e.permissions))
-        color = "warning";
-  if($.inArray("15", e.permissions))
-        color = "danger";
-      
+  var color;
+  if(e.permissions.length > 0) {
+        color = "success";
+  }    
+  else  color = "warning";
+
 	$('#roll_table_body').append('<tr class="'+color+'"id="'+e.timeArrived+'"><td>'+e.firstName+' '+e.lastName+'</td><td>'+e.timeArrived+'</td><td>'+e.permissions+'</tr>');
 }
 function removeUserHTML(e) {
@@ -46,9 +44,6 @@ function removeUserHTML(e) {
 
 //Format of json object
 /*
-{"users":[
-    {"firstName":"John", "lastName":"Doe", "timeArrived":"Mon Jun 06 2016 09:25:33", "expertise": ["Laser Cutter","CNC"]},
-    {"firstName":"Anna", "lastName":"Smith", "timeArrived":"Mon Jun 06 2016 09:25:33", "expertise": ["3D printer","CNC"]},
-    {"firstName":"Peter", "lastName":"Jones", "timeArrived":"Mon Jun 06 2016 09:25:33", "expertise": ["Play-Doh","CNC"]}
-]}
+{"19":{"firstName":"Will","lastName":"Dolan","timeArrived":"01:06:52pm","permissions":["S","S"]}}
+
 */
