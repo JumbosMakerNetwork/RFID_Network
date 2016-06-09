@@ -5,6 +5,7 @@
 	call an AJAX fxn to add it to the html page and add it to roll 
 */
 var roll = {"users":[]};
+var workers = ["Marya", "Ben"]
 
 function executeQuery() {
   $.ajax({
@@ -29,14 +30,21 @@ function flushUserHTML(){
 }
 function addUserHTML(e) {
   var color = "";
-  if($.inArray("13", e.permissions))
-        color = "success";  
-  if($.inArray("14", e.permissions))
+  if($.inArray("13", e.permissions)){
+        color = "success";
+        permission = "Green";
+  }if($.inArray("14", e.permissions))
         color = "warning";
-  if($.inArray("15", e.permissions))
+        permission = "Yellow";
+  if($.inArray("15", e.permissions)){
         color = "danger";
-      
-	$('#roll_table_body').append('<tr class="'+color+'"id="'+e.timeArrived+'"><td>'+e.firstName+' '+e.lastName+'</td><td>'+e.timeArrived+'</td><td>'+e.permissions+'</tr>');
+        permission = "Red";
+  }  
+  if($.inArray(e.firstName, workers)){
+        color = "info";
+        permission = "Worker";
+  }
+	$('#roll_table_body').append('<tr class="'+color+'"id="'+e.timeArrived+'"><td>'+e.firstName+' '+e.lastName+'</td><td>'+e.timeArrived+'</td><td>'+permission+'</tr>');
 }
 function removeUserHTML(e) {
 	$('#'+e.timeArrived).remove();
