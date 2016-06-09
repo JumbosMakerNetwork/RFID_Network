@@ -13,7 +13,7 @@ con = None
 
 try:
      
-    con = psycopg2.connect("dbname=JMN user=jadmin password=jadmin_pw7") 
+    con = psycopg2.connect("dbname=JMN user='xx' password='xx'") 
     con.autocommit = True
 
     uid = sys.argv[1]

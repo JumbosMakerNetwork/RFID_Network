@@ -13,13 +13,13 @@ con = None
 
 try:
      
-    con = psycopg2.connect("dbname=JMN user=jadmin password=jadmin_pw7") 
+    con = psycopg2.connect("dbname=JMN user='xxx' password='xxx'") 
 
     sid = sys.argv[1]
 
     cur = con.cursor()    
     cur.execute("SELECT * FROM users")
-    stations = cur.fetchall()
+    users = cur.fetchall()
 
     # for each user, 
     for user in users:

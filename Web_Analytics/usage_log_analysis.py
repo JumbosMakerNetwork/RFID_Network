@@ -16,7 +16,7 @@ con = None
 # ex. month_logs[1] == 20 means there were 20 logs in oct
 month_logs = [0] * 5
 
-# define the month function blocks
+# define the function blocks
 def sept():
     month_logs[0] += 1
 
