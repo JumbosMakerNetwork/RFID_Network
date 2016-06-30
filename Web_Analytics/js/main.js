@@ -29,15 +29,20 @@ function makeGraph(log_count, user_count) {
 	var data_array1 = log_count.split(",");
 	var data_array2 = user_count.split(",");
 	var len = data_array1.length;
-	for (var i = 0; i < len-2; i++) {
+	for (var i = 0; i < len; i++) {
 			data_array1[i] = parseInt(data_array1[i]);
 			data_array2[i] = parseInt(data_array2[i]);
 	}
 	console.log(data_array1);
 	console.log(data_array2);
+	//for now not showing the last two elements, july and aug
+	data_array1.pop(); data_array1.pop();
+	data_array2.pop(); data_array2.pop();
+	console.log(data_array1);
+	console.log(data_array2);
 
 	var graph_data = {
-	    labels: ["September", "October", "November", "December", "January", "February", "March", "April", "May", "June", "July", "August"],
+	    labels: ["September", "October", "November", "December", "January", "February", "March", "April", "May", "June"],
 	    datasets: [
 	        {
 	            label: "Usage Log per Month",
