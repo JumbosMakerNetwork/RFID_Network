@@ -29,7 +29,7 @@ function makeGraph(log_count, user_count) {
 	var data_array1 = log_count.split(",");
 	var data_array2 = user_count.split(",");
 	var len = data_array1.length;
-	for (var i = 0; i < len; i++) {
+	for (var i = 0; i < len-2; i++) {
 			data_array1[i] = parseInt(data_array1[i]);
 			data_array2[i] = parseInt(data_array2[i]);
 	}
@@ -41,12 +41,12 @@ function makeGraph(log_count, user_count) {
 	    datasets: [
 	        {
 	            label: "Usage Log per Month",
-	            fillColor: "rgba(220,220,220,0.2)",
-	            strokeColor: "rgba(220,220,220,1)",
-	            pointColor: "rgba(220,220,220,1)",
+	            fillColor: "rgba(102,255,102,0.2)",
+	            strokeColor: "rgba(102,255,102,1)",
+	            pointColor: "rgba(102,255,102,1)",
 	            pointStrokeColor: "#fff",
 	            pointHighlightFill: "#fff",
-	            pointHighlightStroke: "rgba(220,220,220,1)",
+	            pointHighlightStroke: "rgba(102,255,102,1)",
 	            data: data_array1
 	        },
 	        {
