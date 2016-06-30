@@ -1,48 +1,43 @@
 #include <SPI.h>
 #include <MFRC522.h>
 #include <SoftwareSerial.h>
+/*
+  * Power/Data Interlock Relay Terminal for Makerspace RFID system
+  * Brian O'Connell, Will Dolan 2016
+*/
 
-// The station ID is unique to each terminal and must be manually entered.
-// Double and triple check this value is what you intend it to be.
-//#define SID 2  // Station ID number  - needs to correlate with database setting
+////////////////////// Wireless network information //////////////////////
 
-//// Wireless network information ////
-/////////////////////////////////////
 const char SSID[] = "tuftswireless";
 // // Empty string since network is not password protected. This particular network is 
-// // mac address registry based. We are not registering the mac addresses of these so
-// // they are limited to accessing internal IPs or websites hosted by Tufts. 
+// // mac address registry based.
 const char PSK[] = ""; 
-// // Static IP of the directory location
 const char DBIP[] = "130.64.17.0";
-#define STID 5                  // Station ID number (soldering)
-
+#define STID  7                 // Station ID number (soldering)
 #define RST_PIN   5   // 
 #define SS_PIN    10  // 
 
-////  RFID Inits ////////////
-/////////////////////////////
-// RFID_UID will be stored and sent as a hex string
+////////////////////// RFID Initial Values //////////////////////
+
 String RFID_UID ="";
 String prevRFID_UID ="";
 MFRC522 RFID(SS_PIN, RST_PIN);  // Create mfrc522 instance
 MFRC522::MIFARE_Key key;
-
 String req = "";
 String info = "";
 
-//// Hardware assignments /////
-///////////////////////////////
+/////////////////////////////// Hardware assignments ///////////////////////////////
+
 SoftwareSerial ESP8266(8, 9); // D8 -> ESP8266 RX, D9 -> ESP8266 TX
 SoftwareSerial LCD(2,3);        // D2 -> LCD TX, D3 -> LCD RX (unused)
 const int greenLED = 7;
 const int redLED = 6;
 const int relayPin = 4;
 
-const int OVRD = A0;  // writing key override to pin 0
-// if the network is down, or there is some other fatal error,turn the key, which will run current to 0, make keyState != LOW and trigger override().
-int keyState = 0;
-int initKeyState = 0;
+const int HELP_BUTTON = A0;
+int helpState = 0;
+int inithelpState = 0;
+int helpButtonCounts = 0;
 
 // For the timer
 unsigned long t0 = 0;
@@ -50,44 +45,41 @@ unsigned long t1 = 0;
 String timer = "";
 
 void setup() {
-  pinMode(redLED, OUTPUT);
-  pinMode(greenLED, OUTPUT);
-  pinMode(relayPin, OUTPUT);
+    pinMode(redLED, OUTPUT);
+    pinMode(greenLED, OUTPUT);
+    pinMode(relayPin, OUTPUT);
 
-  pinMode(OVRD, INPUT);
-  initKeyState = digitalRead(OVRD);
-  keyState = initKeyState;
+    pinMode(HELP_BUTTON, INPUT);
+    inithelpState = digitalRead(HELP_BUTTON);
+    helpState = inithelpState;
 
 
-  // Initialize Serial Communications
-  Serial.begin(9600);   // with the PC for debugging displays
-  LCD.begin(9600);      // With the LCD for external displays
-  LCD.write(0x12); // Makes sure the display is running at 9600 Baud
-  LCD_init();      // With the LCD for external displays
-  ESP8266.begin(9600);
+    // Initialize Serial Communications
+    LCD.begin(9600);     
+    ESP8266.begin(9600);
+    Serial.begin(9600);   // with the PC for debugging displays
+    display("Welcome", "");
 
-  display("Welcome", "");
+    Serial.println(F("checking esp8266!"));
+    while(!ESP8266_Check()){}
+    Serial.println(F("esp8266 checked!"));
+    while( !ESP8266_Mode(3) ){}
+    Serial.println(F("esp8266 set to mode 3!"));
+    while( !connectWiFi() ){}
+    Serial.println(F("esp8266 successfully connected to wifi!"));
 
-  Serial.println(F("checking esp8266!"));
-  while(!ESP8266_Check()){}
-  Serial.println(F("esp8266 checked!"));
-  while( !ESP8266_Mode(3) ){}
-  Serial.println(F("esp8266 set to mode 3!"));
-  while( !connectWiFi() ){}
-  Serial.println(F("esp8266 successfully connected to wifi!"));
+    SPI.begin();      
+    RFID.PCD_Init(); 
 
-  SPI.begin();      
-  RFID.PCD_Init(); 
+    delay(500);
+    display("Waiting for", "RFID..");    
 
-  delay(500);
-  display("Waiting for", "RFID..");    
-
-  // Prepare the key (used both as key A and as key B)
-  // using FFFFFFFFFFFFh which is the default at chip delivery from the factory
-  for (byte i = 0; i < 6; i++) {
-      key.keyByte[i] = 0xFF;
-  }
-  GetRFID(key.keyByte, MFRC522::MF_KEY_SIZE);
+    // Prepare the key (used both as key A and as key B)
+    // using FFFFFFFFFFFFh which is the default at chip delivery from the factory
+    for (byte i = 0; i < 6; i++) {
+        key.keyByte[i] = 0xFF;
+    }
+    GetRFID(key.keyByte, MFRC522::MF_KEY_SIZE);
 }
 
 
@@ -100,13 +92,19 @@ void loop() {
         //for debugging: wait for serial commands while looping
         while(ESP8266.available()) Serial.write(ESP8266.read());
         while(Serial.available()) ESP8266.write(Serial.read());
-
+        if(digitalRead(HELP_BUTTON) != initKeyState) {   
+              ReqJMN("", "4", "contact_admin");
+              display("Administrator","Contacted.")
+              delay(2500);
+              display("Please wait,","help is coming!")
+              delay(2500);  
+              display("Waiting for", "RFID..");          
+        }
         /*delay a tenth of a second, then increment counter, and check wifi periodically
           this makes use of bitwise operations instead of modulo and greater than 4 bil
           comparisons which significantly improves performance 
           The first checks whether counter is a multiple of the period, the second 
           checks whether the counter is greater than 2^31 (2bill) so it can reset. */
-
         delay(100); 
         counter++;
         if(counter & period) {
@@ -122,14 +120,11 @@ void loop() {
                   //ReqJMN( "0", "3", "Wifi disconnect");
                   //delay(200);
                   display("Waiting for", "RFID..");
+                  counter = 0;
            }
         }
 
-    } while ( !getPICC()  && (digitalRead(OVRD) == initKeyState) );
-    //if the keyState != what it was originally set to, i.e. the key has been turned
-    if(digitalRead(OVRD) != initKeyState) {   
-                  override();
-    }
+    } while ( !getPICC() );
   
     Serial.println(F("An RFID has been detected"));
     RFID_UID = GetRFID(RFID.uid.uidByte, RFID.uid.size);
@@ -140,7 +135,7 @@ void loop() {
     // RFID.PICC_HaltA();       // Halt PICC
     // RFID.PCD_StopCrypto1();  // Stop encryption on PCD
 
-    String resp = ReqJMN( RFID_UID, req, info);
+    String resp = ReqJMN(RFID_UID, req, info);
     Serial.println(resp);
 
     // If this is a signin or a server query
@@ -199,22 +194,30 @@ void beginUse()
 
   //while the RFID engaged is the same as before
   while( getPICC() ) { 
-        Serial.println(F("in while loop"));
         Serial.println(RFID_UID);
-        Serial.println( GetRFID(RFID.uid.uidByte, RFID.uid.size) );
-        Serial.println( RFID.PICC_IsNewCardPresent() );
-        Serial.println( RFID.PICC_ReadCardSerial() );
-        //give access for 10 seconds...
-        display("Commence","Use..");
+        RFID.PICC_IsNewCardPresent();
+        RFID.PICC_ReadCardSerial();
+        if(digitalRead(HELP_BUTTON) != initKeyState) {   
+            if(helpButtonCounts > 0) {
+                  ReqJMN(RFID_UID, "4", "contact_admin");
+                  display("Administrator","Contacted.")
+                  delay(2500);
+                  display("Please wait,","help is coming!")
+                  delay(2500);
+            }
+            else {
+                ReqJMN(RFID_UID, "4", "help_email");
+                helpButtonCounts++;
+                display("Help","Requested!")
+                delay(1500);                
+                display("Check your email","for information")
+                delay(2000);                
+                display("or press again","to call admin.")
+                delay(1500);
+            }
+        }
         delay(2000);  //give access for 2 secs
-        display("Commence","Use...");
-        delay(2000);  //give access for 2 secs
-        display("Commence","Use....");
-        delay(2000);  //give access for 2 secs
-        display("Commence","Use.....");
-        delay(2000);  //give access for 2 secs
-        display("Commence","Use......");
-        delay(2000);  //give access for 2 secs
+        display("Commence Use","or Press Help!");
   }
   endUse();
 }
@@ -235,6 +238,7 @@ void endUse()
     Serial.println(F("seconds elapsed: "));
     Serial.println(info);
     ReqJMN( RFID_UID, req, info);
+    helpButtonCounts = 0;
     delay(1000);
 }
 
@@ -455,17 +459,6 @@ String ReqJMN(String RFID1, String req1, String info1)
 ////////////////// MISC UTILITIES ///////////////////////////////////
 //////////////////////////////////////////////////////
 
-void LCD_init() 
-{
-      // Initialize the display
-      LCD.write(0x0C); // Turn Display on
-      delay(10);
-      LCD.write(0x7C); // Command Character
-      delay(10);
-      LCD.write(157); // Full Brightness
-      delay(10);
-}
-
 // Function for sending strings to the display
 void display(String Line1, String Line2)
 {
@@ -490,25 +483,6 @@ void display(String Line1, String Line2)
   LCD.write(L2);
 
   delay(25);
-}
-
-void override()
-{
-  display("OVERRIDE","");
-  digitalWrite(redLED, HIGH);
-  digitalWrite(greenLED, HIGH);
-  digitalWrite(relayPin, HIGH); 
-
-  while(digitalRead(OVRD) != initKeyState) {
-    // While the key state is not what it was at the initialization of the program
-    // turn the key back to original state to end the override
-    delay(20000); 
-
-  }
-  digitalWrite(relayPin, LOW);
-  digitalWrite(redLED, LOW);
-  digitalWrite(greenLED, LOW);
-
 }
 
 String getName(String response)
@@ -547,3 +521,4 @@ String center(String toCenter)
   center1 += toCenter;
   return center1;
 }
+

@@ -5,7 +5,6 @@
 	call an AJAX fxn to add it to the html page and add it to roll 
 */
 var roll = {"users":[]};
-var workers = ["Marya", "Ben"]
 
 function executeQuery() {
   $.ajax({
@@ -39,10 +38,6 @@ function addUserHTML(e) {
   if($.inArray("15", e.permissions)){
         color = "danger";
         permission = "Red";
-  }  
-  if($.inArray(e.firstName, workers)){
-        color = "info";
-        permission = "Worker";
   }
 	$('#roll_table_body').append('<tr class="'+color+'"id="'+e.timeArrived+'"><td>'+e.firstName+' '+e.lastName+'</td><td>'+e.timeArrived+'</td><td>'+permission+'</tr>');
 }
