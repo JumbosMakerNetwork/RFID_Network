@@ -37,7 +37,7 @@ function makeGraph(log_count, user_count) {
 	console.log(data_array2);
 
 	var graph_data = {
-	    labels: ["September", "October", "November", "December", "January"],
+	    labels: ["September", "October", "November", "December", "January", "February", "March", "April", "May", "June", "July", "August"],
 	    datasets: [
 	        {
 	            label: "Usage Log per Month",
