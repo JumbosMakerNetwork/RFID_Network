@@ -35,18 +35,23 @@ function makeGraph(log_count, user_count) {
 	}
 	console.log(data_array1);
 	console.log(data_array2);
+	//for now not showing the last two elements, july and aug
+	data_array1.pop(); data_array1.pop();
+	data_array2.pop(); data_array2.pop();
+	console.log(data_array1);
+	console.log(data_array2);
 
 	var graph_data = {
-	    labels: ["September", "October", "November", "December", "January"],
+	    labels: ["September", "October", "November", "December", "January", "February", "March", "April", "May", "June"],
 	    datasets: [
 	        {
 	            label: "Usage Log per Month",
-	            fillColor: "rgba(220,220,220,0.2)",
-	            strokeColor: "rgba(220,220,220,1)",
-	            pointColor: "rgba(220,220,220,1)",
+	            fillColor: "rgba(102,255,102,0.2)",
+	            strokeColor: "rgba(102,255,102,1)",
+	            pointColor: "rgba(102,255,102,1)",
 	            pointStrokeColor: "#fff",
 	            pointHighlightFill: "#fff",
-	            pointHighlightStroke: "rgba(220,220,220,1)",
+	            pointHighlightStroke: "rgba(102,255,102,1)",
 	            data: data_array1
 	        },
 	        {

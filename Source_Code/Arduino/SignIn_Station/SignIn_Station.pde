@@ -18,7 +18,7 @@ const char PSK[] = "";
 // Static IP of the directory location
 const char DBIP[] = "130.64.17.0";
 
-#define STID 7                  // Station ID number 
+#define STID 1                  // Station ID number 
 #define RST_PIN   5   
 #define SS_PIN    10 
 

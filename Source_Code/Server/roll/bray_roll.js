@@ -9,35 +9,37 @@ var roll = {"users":[]};
 function executeQuery() {
   $.ajax({
     url: 'bray_roll.json',
-    success: function(data) {
-    	var new_roll = JSON.parse(data);
-    	for (var e in roll.users) {
-    		if ($.inArray(e, new_roll.users) == -1){ 
-	    		//if an old element is not in new_roll{}, take it out of HTML page and array
-	    		removeUserHTML(e);
-				var index = roll.users.indexOf(e);
-				roll.users.splice(index, 1);
-			}
-    	}
-    	for (var e in new_roll.users) {
-    		if ($.inArray(e, roll.users) == -1){ 
-	    		//if the new element is not in roll{}, add it to HTML and roll.users
-	    		addUserHTML(e);
-	    		roll.users.push(e)
-			}
+    success: function(new_roll) {
+      flushUserHTML();
+    	for (var i in new_roll) {
+	    		addUserHTML(new_roll[i]);
     	}
     }
   });
-  setTimeout(executeQuery, 10000);
+  setTimeout(executeQuery, 5000);
 }
 
 $(document).ready(function() {
   // run executeQuery first time; all subsequent calls will take care of themselves
-  setTimeout(executeQuery, 5000);
+  executeQuery();
 });
 
+function flushUserHTML(){
+  $('#roll_table_body').empty();
+}
 function addUserHTML(e) {
-	$('#roll_table').append('<tr id="'+e.timeArrived+'"><td>'+e.firstName+' '+e.lastName+'</td><td>'+e.timeArrived+'</td><td>'+e.expertise+'</tr>');
+  var color = "";
+  if($.inArray("13", e.permissions)){
+        color = "success";
+        permission = "Green";
+  }if($.inArray("14", e.permissions))
+        color = "warning";
+        permission = "Yellow";
+  if($.inArray("15", e.permissions)){
+        color = "danger";
+        permission = "Red";
+  }
+	$('#roll_table_body').append('<tr class="'+color+'"id="'+e.timeArrived+'"><td>'+e.firstName+' '+e.lastName+'</td><td>'+e.timeArrived+'</td><td>'+permission+'</tr>');
 }
 function removeUserHTML(e) {
 	$('#'+e.timeArrived).remove();

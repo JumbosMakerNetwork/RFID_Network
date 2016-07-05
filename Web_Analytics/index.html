@@ -29,19 +29,35 @@
   </header>
 
 <div class="container">
-	<div class="subsection">
-        <div class="text size-67">
           <h4>Tufts Maker RFID Network</h4>
           <p>Welcome to the Jumbo RFID Utility Page.</p>
           <p>Tufts' Makerspaces utilize RFID signin technology to track machine usage and measure participation, ensure security, and collect meaningful statistics about the different makerspaces. </p>
+</div>
+
+<ul class="nav nav-tabs" width =".6">
+  <li class="active">
+    <a href="#">RFID Network Home</a>
+  </li>
+  <li><a href="bray.html">Bray Labratory</a></li>
+  <li><a href="about.html">About</a></li>
+</ul>
+
+<div class="container">
+    <canvas id="usage_graph" width=".6"></canvas>
+</div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-6">
+        <h2 class="text-center">Number of RFID Users</h2>
+        <h4 class="text-center" id="num_users"></h4>
+      </div>      
+      <div class="col-md-6">
+        <h2 class="text-center">Makerspace Machine Uses This Week</h2>
+        <h4 class="text-center" id="machine_use"></h4>
       </div>
   </div>
-</div>
-<div class="container">
-	<div class="subsection">
-		<canvas id="usage_graph" width=".6"></canvas>
-    <div id = 'test'></div>
-  </div>
+		
 </div>
 
 </body>

@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Will Dolan
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*- 
 
 # This is the code for automatically assigning 'false' permission for each station
 # when a new user gets added. One must "pass" the uid number into this function.
