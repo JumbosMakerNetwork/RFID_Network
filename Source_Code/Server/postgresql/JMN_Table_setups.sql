@@ -98,7 +98,8 @@ INSERT INTO locations values (LID /*serial PRIMARY KEY*/, name /*text*/, descrip
 -- Examples from our setup
 INSERT INTO locations VALUES (default, 'Jumbo''s Maker Studio', 'Test information blah blah blah', '200 Boston Ave Suite G810 Medford MA 02155', default);
 INSERT INTO locations VALUES (default, 'The Crafts Center', 'TCU-funded free student-run arts and crafts makerspace', 'Lewis Hall Basement Medford MA 02155', default);
-
+INSERT INTO locations VALUES (default, 'Machine Shop', 'Machine Shop in Bray Lab', 'Bray Lab Medford MA 02155', default);
+INSERT INTO locations VALUES (default, 'Creativity Space', '2nd Floor Design Space in Bray Lab', 'Bray Lab Medford MA 02155', default);
 
 -- 
 
@@ -164,7 +165,7 @@ CREATE TABLE permissions (
 
 INSERT INTO permissions VALUES (SID /* integer REFERENCES stations (SID) */, UID /* integer REFERENCES users (UID) */, access /* boolean default false */, reg_date /* date */, exp_date /* date */, luse /* timestamp without time zone */, uses /* integer DEFAULT 0 */, time_used /* interval hour to second DEFAULT '0 days 0:00:00' */, AVG_use /* interval hour to second */, AVG_period /* integer */, Notes /* text */, );
 
-INSERT INTO permissions VALUES (8, 26, true, default, default, default, default, default, default, default, default);
+INSERT INTO permissions VALUES (12, 1, true, default, default, default, default, default, default, default, default);
 
 INSERT INTO permissions VALUES (1, 13, true, CURRENT_DATE, CURRENT_DATE, CURRENT_TIMESTAMP, 0, default);
 
@@ -232,6 +233,24 @@ CREATE TABLE Training_Status(
     expires     date,
     Notes       text
     );
+
+
+CREATE TABLE roll_call(
+    UID         integer REFERENCES users (UID) unique,
+    loc_cur     integer REFERENCES locations (LID),
+    ent         timestamp DEFAULT current_timestamp
+    );
+
+INSERT INTO roll_call VALUES (18, 4, default), (19, 4, default), (20, 4, default), (21, 4, default);
+
+GRANT SELECT ON roll_call TO jadmin;
+GRANT INSERT ON roll_call TO jadmin;
+GRANT UPDATE ON roll_call TO jadmin;
+GRANT USAGE ON roll_call_uid_fkey TO jadmin;
+GRANT USAGE ON roll_call_loc_cur_fkey TO jadmin;
+
+
+
 
 -- Add rows for testing purposes
 
