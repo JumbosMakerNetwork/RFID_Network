@@ -13,7 +13,8 @@
  #include "camera.h"
 
 #define stid "5"
-
+#define x_ms 200L
+void sleep_for_x_ms();
 /* Main :
  *      First, initialize RFID and GPIO components
  *      Then, enter loop. Wait for RFID, then 
@@ -35,6 +36,7 @@ int main(void)
         int initPhotoState = readPhoto(0);
 	
 	while(1) {
+		sleep_for_x_ms();		
 		status = look_for_RFID();
 
                 if(status == 1){
@@ -45,6 +47,7 @@ int main(void)
         		if (strchr(JMN_resp,'T') != NULL) {
                                 time_t begin_t = beginUse(JMN_resp);
                                 while(status == 1){
+					sleep_for_x_ms();		
                                         if(readHelp(initHelpState) == 1){
                                                 sendHelp(RFID_UID);
                                                 ReqJMN(JMN_resp, RFID_UID, "4", "help_email", stid);
@@ -81,6 +84,12 @@ int main(void)
         free(JMN_resp);
         return 0;
 }
-
+void sleep_for_x_ms()
+{
+	struct timespec tim, tim2;
+	tim.tv_sec  = 0;
+	tim.tv_nsec = (x_ms * 1000000L); 
+	nanosleep(&tim , &tim2);
+}
 //char *ReqJMN(char *RFID, char *req, char *info, char* station);
 
