@@ -403,8 +403,8 @@ class Interlock(wx.Frame):
         self.MBox = Mbox= wx.BoxSizer(wx.VERTICAL)
 
         #Create Content
-        self.WTxt = WTxt = wx.StaticText(self, label=" Welcome to \'Name of Space\'' ", style=wx.ALIGN_CENTER) 
-        self.ATxt = ATxt = wx.StaticText(self, label=" \' Name of Station \' ", style=wx.ALIGN_CENTER)
+        self.WTxt = WTxt = wx.StaticText(self, label=" Initial Configuration... ", style=wx.ALIGN_CENTER) 
+        self.ATxt = ATxt = wx.StaticText(self, label=" Still Configuring...", style=wx.ALIGN_CENTER)
         font = wx.Font(36, wx.DECORATIVE, wx.ITALIC, wx.BOLD)
         self.WTxt.SetFont(font)
         self.ATxt.SetFont(font)
@@ -473,23 +473,26 @@ class Interlock(wx.Frame):
     def ILock(self, status, WText, AText): #Either locks or unlocks the window
         global X, Y
         print ''
-        self.Freeze()
+        # self.Freeze()
         self.SetFocus()
         self.WTxt.SetLabel(WText)
         self.ATxt.SetLabel(AText)
         self.MBox.Layout()
-        self.Freeze()
+        # self.Freeze()
         if status:        
             # self.SetTransparent(100)
             print ' Unlocking the screen '
             time.sleep(3)
+            self.Freeze()
             self.SetWindowStyle(~wx.STAY_ON_TOP)
             dX = X * .75
             dY = Y * .75
             # self.MoveXY(dX,dY)
             self.MoveXY(X,Y)
+            self.Thaw()
         elif not status:
             print ' Locking the screen '
+            self.Freeze()
             self.Centre()
             # self.Raise()
             # self.SetTransparent(200)
@@ -497,10 +500,11 @@ class Interlock(wx.Frame):
             # dX = X * 0.05
             # dY = Y * 0.05
             # self.MoveXY(dX,dY)
-        self.Thaw()
+            self.Thaw()
+        # self.Thaw()
 
     def UserCheck(self,event):
-        global ser, RFID, user, access
+        global ser, RFID, user, access, LName, SName
 
         print 'begin of user check '
 
@@ -513,7 +517,7 @@ class Interlock(wx.Frame):
 
             if data[5] != '#':  # Then there is still no user
                 print 'No new RFID '
-                self.ILock(False, " Welcome to \'Name of Space\'' ", " \' Name of Station \' ") # Reset the lock 
+                self.ILock(False, (" Welcome to " + LName) , (" The " + SName + "Station") # Reset the lock 
                 user = False    # Reaffirm no user in place
             elif data[5] == '#': 
                 user = True                 # There's a user now
@@ -573,7 +577,7 @@ class Interlock(wx.Frame):
                 self.UserTimer.Pause()
                 sec = int(msec)/1000
                 print 'Use Time: ' + str(sec) + ' sec'
-                self.ILock(False, " Welcome to \'Name of Space\'' ", " \' Name of Station \' ")
+                self.ILock(False, (" Welcome to " + LName) , (" The " + SName + "Station")
 
 
 
