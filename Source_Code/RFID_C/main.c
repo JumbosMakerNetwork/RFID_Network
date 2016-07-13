@@ -55,14 +55,14 @@ int main(void)
                                         if(readPhoto(initPhotoState) == 1){
                                                 photo_time = takePicture();
                                                 sprintf(photo_time_s, "%d", photo_time);
-                                                ReqJMN(JMN_resp, RFID_UID, "5", "123", stid);
+                                                ReqJMN(JMN_resp, RFID_UID, "5", "5002", stid);
                                         }
                                         status = look_for_RFID();
                                         status = look_for_RFID();
                                         //need to call twice! don't touch.****
                                 }
                                 use_time = endUse(begin_t);
-                                sprintf(use_time_s, "%d", use_time);
+                                sprintf(use_time_s, "%d seconds", use_time);
                                 ReqJMN(JMN_resp, RFID_UID, "2", use_time_s, stid);
                         }
 

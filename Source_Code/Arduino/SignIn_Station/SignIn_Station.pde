@@ -9,7 +9,7 @@
 
 //////////////////////// Wireless network information //////////////////////////////////
 
-const char SSID[] = "tuftswireless";
+const char SSID[] = "Tufts_Wireless";
 
 // PW = Empty string since network is not password protected. This particular network is 
 // mac address registry based. We are not registering the mac addresses of these so
@@ -32,7 +32,7 @@ MFRC522::MIFARE_Key key;
 /////////////////////////////////// Hardware assignments /////////////////////////////
 
 SoftwareSerial ESP8266(8, 9); // D9 -> ESP8266 RX, D10 -> ESP8266 TX
-SoftwareSerial LCD(3,2);        // D2 -> LCD TX, D3 -> LCD RX (unused)
+SoftwareSerial LCD(2,3);        // D2 -> LCD TX, D3 -> LCD RX (unused)
 #define greenLED 7
 #define redLED   6
 #define esp8266_rst_pin  A1
