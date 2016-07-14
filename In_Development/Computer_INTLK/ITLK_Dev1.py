@@ -4,6 +4,8 @@
 # '''
 # RFID Terminal Computer Interlock
 
+#cd /Users/boconn7782/Documents/GradSchool/Dissertation/MakerStudio_Equipment/GIT/In_Development/Computer_INTLK
+
 # In this code example, we create a
 # custom dialog.
 
@@ -517,7 +519,7 @@ class Interlock(wx.Frame):
 
             if data[5] != '#':  # Then there is still no user
                 print 'No new RFID '
-                self.ILock(False, (" Welcome to " + LName) , (" The " + SName + "Station") # Reset the lock 
+                self.ILock(False, (" Welcome to " + LName) , (" The " + SName + "Station")) # Reset the lock 
                 user = False    # Reaffirm no user in place
             elif data[5] == '#': 
                 user = True                 # There's a user now
@@ -577,7 +579,7 @@ class Interlock(wx.Frame):
                 self.UserTimer.Pause()
                 sec = int(msec)/1000
                 print 'Use Time: ' + str(sec) + ' sec'
-                self.ILock(False, (" Welcome to " + LName) , (" The " + SName + "Station")
+                self.ILock(False, (" Welcome to " + LName) , (" The " + SName + "Station"))
 
 
 
