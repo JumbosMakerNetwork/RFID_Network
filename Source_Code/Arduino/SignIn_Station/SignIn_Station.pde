@@ -9,7 +9,7 @@
 
 //////////////////////// Wireless network information //////////////////////////////////
 
-const char SSID[] = "tuftswireless";
+const char SSID[] = "Tufts_Wireless";
 
 // PW = Empty string since network is not password protected. This particular network is 
 // mac address registry based. We are not registering the mac addresses of these so
@@ -49,7 +49,7 @@ void setup() {
 
     // Initialize Serial Communications
     Serial.begin(9600);   // with the PC for debugging displays
-    LCD.begin(9600);      // With the LCD for external displays
+    DisplayInit();        // Start and Configure LCD for external displays
     ESP8266.begin(9600);
     display("Welcome", "");
 
@@ -432,6 +432,21 @@ String getName(String response)
     response.remove(k, j);
 
     return response;
+}
+
+void DisplayInit()
+{
+  LCD.begin(9600);
+  delay(100);
+  // To be run during splash screen to ensure running at 9600
+  LCD.write(0X7C); LCD.write(0X12);
+  delay(500);
+  // Reset the brightness to 40%
+  LCD.write(0X7C); LCD.write(140);
+  delay(100);
+  // Clear Screen
+  LCD.write(0X7C); LCD.write(0X01);
+  delay(100);
 }
 
 String center(String toCenter)

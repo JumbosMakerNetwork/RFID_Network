@@ -22,6 +22,10 @@ except ImportError:
 import psycopg2
 import psycopg2.extras
 import sys, glob, serial, time, os
+# curl utils
+import pycurl
+import ast
+from io import BytesIO
 
 # Initial Values
 
@@ -62,29 +66,71 @@ def serial_ports():
     return result
 
 
+# def Locations():
+#     # Get list of locations and location ids
+#     con = None
+
+#     try:
+#         con = psycopg2.connect(database='JMN', user='jadmin', password = 'jadmin_pw7', host = '130.64.17.0', port = '5432')
+#         cur = con.cursor(cursor_factory=psycopg2.extras.DictCursor)
+#         # cur = con.cursor()
+#         cur.execute('SELECT lid, name FROM locations WHERE lid > 0')
+#         locations = cur.fetchall()
+#         # print locations
+#         # for row in locations:
+#         #     print "%s %s" % (row["lid"], row["name"])
+#     except psycopg2.DatabaseError, e:
+#         print 'Error %s' % e
+#         sys.exit(1)
+#     finally:
+#         if con:
+#             con.close()
+
+#     # locations = [[0, 'Nowhere'],[1, 'Jumbo\'s Maker Studio'],[5, 'Bray Machine Shop']]
+
+#     return locations
+
+
+# def Stations(loc):
+#     # Acquires a list of stations listed in the database and their ids
+#     # loc = 1
+
+#     if loc == 0:
+#         stations = [[0, " none available "]]
+#     else:
+#         con = None
+
+#         try:
+#             con = psycopg2.connect(database='JMN', user='jadmin', password = 'jadmin_pw7', host = '130.64.17.0', port = '5432')
+#             cur = con.cursor(cursor_factory=psycopg2.extras.DictCursor)
+#             # cur = con.cursor()
+#             cur.execute('SELECT sid, name FROM stations WHERE loc = ' + str(loc))
+#             stations = cur.fetchall()
+#             # for row in stations:
+#             #   print "%s %s" % (row["sid"], row["name"])
+#         except psycopg2.DatabaseError, e:
+#             print 'Error %s' % e
+#             sys.exit(1)
+#         finally:
+#             if con:
+#                 con.close()
+
+#     # stations = [[16, 'Sign In Station'], [13, 'Green Status'], [14, 'Yellow Status'], [15, 'Red Status']]
+
+#     return stations
+
 def Locations():
-    # Get list of locations and location ids
-    con = None
+    buffer = BytesIO()
+    c = pycurl.Curl()
+    c.setopt(c.URL, 'http://130.64.17.0:8000/RFID/locations/')
+    c.setopt(c.WRITEDATA, buffer)
+    c.perform()
+    c.close()
 
-    try:
-        con = psycopg2.connect(database='JMN', user='jadmin', password = 'jadmin_pw7', host = '130.64.17.0', port = '5432')
-        cur = con.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        # cur = con.cursor()
-        cur.execute('SELECT lid, name FROM locations WHERE lid > 0')
-        locations = cur.fetchall()
-        # print locations
-        # for row in locations:
-        #     print "%s %s" % (row["lid"], row["name"])
-    except psycopg2.DatabaseError, e:
-        print 'Error %s' % e
-        sys.exit(1)
-    finally:
-        if con:
-            con.close()
+    body = buffer.getvalue()
+    l_dict = ast.literal_eval(body)
 
-    # locations = [[0, 'Nowhere'],[1, 'Jumbo\'s Maker Studio'],[5, 'Bray Machine Shop']]
-
-    return locations
+    return l_dict
 
 
 def Stations(loc):
@@ -92,29 +138,20 @@ def Stations(loc):
     # loc = 1
 
     if loc == 0:
-        stations = [[0, " none available "]]
+        stations = {0: " none available "}
     else:
-        con = None
+        buffer = BytesIO()
+        stations_url = 'http://130.64.17.0:8000/RFID/locations/' + str(loc) + '/'
+        c = pycurl.Curl()
+        c.setopt(c.URL, stations_url)
+        c.setopt(c.WRITEDATA, buffer)
+        c.perform()
+        c.close()
 
-        try:
-            con = psycopg2.connect(database='JMN', user='jadmin', password = 'jadmin_pw7', host = '130.64.17.0', port = '5432')
-            cur = con.cursor(cursor_factory=psycopg2.extras.DictCursor)
-            # cur = con.cursor()
-            cur.execute('SELECT sid, name FROM stations WHERE loc = ' + str(loc))
-            stations = cur.fetchall()
-            # for row in stations:
-            #   print "%s %s" % (row["sid"], row["name"])
-        except psycopg2.DatabaseError, e:
-            print 'Error %s' % e
-            sys.exit(1)
-        finally:
-            if con:
-                con.close()
+        body = buffer.getvalue()
+        stations = ast.literal_eval(body)
 
-    # stations = [[16, 'Sign In Station'], [13, 'Green Status'], [14, 'Yellow Status'], [15, 'Red Status']]
-
-    return stations
-
+    return(stations)
 
 def GetUID(rfid):
     print "Getting UID"
