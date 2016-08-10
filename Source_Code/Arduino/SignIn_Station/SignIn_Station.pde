@@ -32,7 +32,7 @@ MFRC522::MIFARE_Key key;
 /////////////////////////////////// Hardware assignments /////////////////////////////
 
 SoftwareSerial ESP8266(8, 9); // D9 -> ESP8266 RX, D10 -> ESP8266 TX
-SoftwareSerial LCD(2,3);        // D2 -> LCD TX, D3 -> LCD RX (unused)
+SoftwareSerial LCD(3,2);        // D2 -> LCD TX, D3 -> LCD RX (unused)
 #define greenLED 7
 #define redLED   6
 #define esp8266_rst_pin  A1
@@ -49,7 +49,7 @@ void setup() {
 
     // Initialize Serial Communications
     Serial.begin(9600);   // with the PC for debugging displays
-    LCD.begin(9600);      // With the LCD for external displays
+    DisplayInit();        // Start and Configure LCD for external displays
     ESP8266.begin(9600);
     display("Welcome", "");
 
@@ -432,6 +432,21 @@ String getName(String response)
     response.remove(k, j);
 
     return response;
+}
+
+void DisplayInit()
+{
+  LCD.begin(9600);
+  delay(100);
+  // To be run during splash screen to ensure running at 9600
+  LCD.write(0X7C); LCD.write(0X12);
+  delay(500);
+  // Reset the brightness to 40%
+  LCD.write(0X7C); LCD.write(140);
+  delay(100);
+  // Clear Screen
+  LCD.write(0X7C); LCD.write(0X01);
+  delay(100);
 }
 
 String center(String toCenter)
