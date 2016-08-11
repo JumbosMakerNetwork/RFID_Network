@@ -7,6 +7,6 @@
 #ifndef CAMERA_H_
 #define CAMERA_H_
 
-int takePicture();
+void takePicture(char *time_file, char *rfid);
 
 #endif /* CAMERA_H_ */

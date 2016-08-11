@@ -14,6 +14,8 @@
 
 size_t writeCallback(char* buf, size_t size, size_t nmemb, void* up);
 void ReqJMN(char *resp, char *RFID, char *req, char *info, char* station);
-char *composeURL(char *RFID, char *req, char *info, char *station);
+void composeURL(char *URL, char *RFID, char *req, char *info, char *station);
+void execute_curl(char *resp, char *httpURL);
+void execute_photo_post(char *resp, char *httpURL, char *info);
 
 #endif /* CURLREQ_H_ */

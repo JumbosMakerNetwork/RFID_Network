@@ -4,6 +4,8 @@
 # '''
 # RFID Terminal Computer Interlock
 
+#cd /Users/boconn7782/Documents/GradSchool/Dissertation/MakerStudio_Equipment/GIT/In_Development/Computer_INTLK
+
 # In this code example, we create a
 # custom dialog.
 
@@ -11,113 +13,42 @@
 # last modified: June 2016
 # '''
 
+#'''
+# Program functions by sniffing a station status field in the database.
+# Using the URL http://130.64.17.0:8000/RFID/inUse/<sid>/ 
+# This returns {'access': 'False null.', 'uname': 'null', 'email': 'null@null.com', 'fname': 'null'} when not in use
+# This returns {'access': 'True Will.', 'uname': 'dolanwill', 'email': 'dolanwill@gmail.com', 'fname': 'Will'} when in use by user "dolanwill"
+
+#'''
+
 # Import the GUI toolkit module
 try:
     import wx
 except ImportError:
     raise ImportError,"The wxPython module is required to run this program."
 
-import psycopg2
-import psycopg2.extras
-import sys, glob, serial, time, os
-# curl utils
-import pycurl
-import ast
-from io import BytesIO
+# import psycopg2
+# import psycopg2.extras
+import sys, glob, time, os, pycurl, ast
 
+try:
+    from io import BytesIO
+except ImportError:
+    raise ImportError,"The io module is required to run this program."
 # Initial Values
 
 lid = 0
 sid = 0
 LName= " "
 SName = " "
-# port = ''
-ser = None
 user = False
-access = None
-RFID = 'RFID:'
-# StartUse = 
+access = False
+UName = 'None'
 X = None
 Y = None
 
-def serial_ports():
-    # Lists serial port names for selection later
-
-    if sys.platform.startswith('win'):
-        ports = ['COM%s' % (i + 1) for i in range(256)]
-    elif sys.platform.startswith('linux') or sys.platform.startswith('cygwin'):
-        # this excludes your current terminal "/dev/tty"
-        ports = glob.glob('/dev/tty[A-Za-z]*')
-    elif sys.platform.startswith('darwin'):
-        ports = glob.glob('/dev/tty.*')
-    else:
-        raise EnvironmentError('Unsupported platform')
-
-    result = []
-    for port in ports:
-        try:
-            s = serial.Serial(port)
-            s.close()
-            result.append(port)
-        except (OSError, serial.SerialException):
-            pass
-    return result
-
-
-# def Locations():
-#     # Get list of locations and location ids
-#     con = None
-
-#     try:
-#         con = psycopg2.connect(database='JMN', user='jadmin', password = 'jadmin_pw7', host = '130.64.17.0', port = '5432')
-#         cur = con.cursor(cursor_factory=psycopg2.extras.DictCursor)
-#         # cur = con.cursor()
-#         cur.execute('SELECT lid, name FROM locations WHERE lid > 0')
-#         locations = cur.fetchall()
-#         # print locations
-#         # for row in locations:
-#         #     print "%s %s" % (row["lid"], row["name"])
-#     except psycopg2.DatabaseError, e:
-#         print 'Error %s' % e
-#         sys.exit(1)
-#     finally:
-#         if con:
-#             con.close()
-
-#     # locations = [[0, 'Nowhere'],[1, 'Jumbo\'s Maker Studio'],[5, 'Bray Machine Shop']]
-
-#     return locations
-
-
-# def Stations(loc):
-#     # Acquires a list of stations listed in the database and their ids
-#     # loc = 1
-
-#     if loc == 0:
-#         stations = [[0, " none available "]]
-#     else:
-#         con = None
-
-#         try:
-#             con = psycopg2.connect(database='JMN', user='jadmin', password = 'jadmin_pw7', host = '130.64.17.0', port = '5432')
-#             cur = con.cursor(cursor_factory=psycopg2.extras.DictCursor)
-#             # cur = con.cursor()
-#             cur.execute('SELECT sid, name FROM stations WHERE loc = ' + str(loc))
-#             stations = cur.fetchall()
-#             # for row in stations:
-#             #   print "%s %s" % (row["sid"], row["name"])
-#         except psycopg2.DatabaseError, e:
-#             print 'Error %s' % e
-#             sys.exit(1)
-#         finally:
-#             if con:
-#                 con.close()
-
-#     # stations = [[16, 'Sign In Station'], [13, 'Green Status'], [14, 'Yellow Status'], [15, 'Red Status']]
-
-#     return stations
-
 def Locations():
+    # Returns a dictionary of locations keyed to their ids from the database
     buffer = BytesIO()
     c = pycurl.Curl()
     c.setopt(c.URL, 'http://130.64.17.0:8000/RFID/locations/')
@@ -126,14 +57,14 @@ def Locations():
     c.close()
 
     body = buffer.getvalue()
-    l_dict = ast.literal_eval(body)
+    locations = ast.literal_eval(body)
+    del locations[0] # Eliminates the arbitrary location 'Out'
 
-    return l_dict
+    return locations
 
 
 def Stations(loc):
-    # Acquires a list of stations listed in the database and their ids
-    # loc = 1
+    # Returns a dictionary of stations for that location keyed to their station ids from the database
 
     if loc == 0:
         stations = {0: " none available "}
@@ -149,83 +80,26 @@ def Stations(loc):
         body = buffer.getvalue()
         stations = ast.literal_eval(body)
 
-    return(stations)
+    return stations
 
-def GetUID(rfid):
-    print "Getting UID"
-    con = None
-    try:
-        con = psycopg2.connect(database='JMN', user='jadmin', password = 'jadmin_pw7', host = '130.64.17.0', port = '5432')
-        cur = con.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        # cur = con.cursor()
-        cur.execute("SELECT uid, fname FROM users WHERE rfid = \'E\\\\x" + rfid + "\'")
+def CheckUser(station):
+    # Returns a dictionary of the user associated with the ID at that location's terminal
 
-        userInfo = cur.fetchall()
-        print userInfo
-        # for row in stations:
-        #   print "%s %s" % (row["sid"], row["name"])
-    except psycopg2.DatabaseError, e:
-        print 'Error %s' % e
-        sys.exit(1)
-    finally:
-        if con:
-            con.close()
+    print "Checking for user at terminal..."
+    buffer = BytesIO()
+    c = pycurl.Curl()
+    c.setopt(c.URL, 'http://130.64.17.0:8000/RFID/inUse/' + str(station) + '/')
+    c.setopt(c.WRITEDATA, buffer)
+    c.perform()
+    c.close()
 
-    if not userInfo:
-        userInfo = [[0, 'No User']]
-    return (userInfo[0][0], userInfo[0][1]) #(userInfo["uid"], userInfo["fname"])
+    body = buffer.getvalue()
+    user_info = ast.literal_eval(body)
 
-def CheckAccess(uid):
-    print "Checking for Access"
-    global sid
+    return user_info
 
-    con = None
-    try:
-        con = psycopg2.connect(database='JMN', user='jadmin', password = 'jadmin_pw7', host = '130.64.17.0', port = '5432')
-        cur = con.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        # cur = con.cursor()
-        cur.execute('SELECT access FROM permissions WHERE uid = ' + str(uid) + ' AND sid = ' + str(sid))
-        response = cur.fetchall()
-        print response
-        access = response[0][0]
-        if response[0][0] == True:
-            access = True
-        elif response[0][0] == False:
-            access = False
-        else:
-            access = None
 
-        print access
-        # for row in stations:
-        #   print "%s %s" % (row["sid"], row["name"])
-    except psycopg2.DatabaseError, e:
-        print 'Error %s' % e
-        sys.exit(1)
-    finally:
-        if con:
-            con.close()
-    return access
 
-def GetData():
-    global ser
-    # Check the serial port for the arduino serial
-    ser.flushInput() # Flush the serial port
-    time.sleep(.75) # Wait for the next signal
-    key = 'RFID:'   # A known key from the arduino feed
-    data = ser.readline()[:-2]
-    for i in range(0,6): # Check the port 1 to 5 times
-        if data[0:5] == key:    # Check and make sure the information meets the key
-            break
-        else:   # If it doesn't, try again
-            ser.flushInput()
-            time.sleep(.75)
-            data = ser.readline()[:-2]
-            print 'missed key on User Check - ' + str(i)
-    if data[0:5] != key:
-        data = ''
-    return data
-
-# Set up a configuration file to assist in restarting the application when closed. 
 class ConfigWindow(wx.Dialog):
   
     def __init__(self, parent, title):
@@ -233,6 +107,7 @@ class ConfigWindow(wx.Dialog):
 
         global lid, sid #, LName, SName
 
+        # Set up a configuration file to assist in restarting the application when closed. 
         self.cfg = wx.Config('station_configuration')
         # self.cfg.DeleteAll()
 
@@ -264,31 +139,33 @@ class ConfigWindow(wx.Dialog):
         #Establish the timer (For use when checking serial ports)
         print 'Established Config timer'
         self.ConfigTimer = ConfigTimer = wx.Timer(self)
-        self.Bind(wx.EVT_TIMER, self.ReadPort, id=self.ConfigTimer.GetId())
+        self.Bind(wx.EVT_TIMER, self.CheckConnection, id=self.ConfigTimer.GetId())
+        if sid != 0:
+            self.ConfigTimer.Start(2000)
 
         #Locations info
         print 'creat Locations info'
         ltl = wx.StaticText(panel, label=' Locations ')
         print 'Created ltl'
         locs = Locations()
-        locs = zip(*locs)
         if lid:
-            LName = locs[1][locs[0].index(lid)]
+            LName = locs[lid]
         else:
             LName = " "
-        self.lb = lb = wx.ComboBox(panel, value=LName, choices=locs[1], style=wx.CB_READONLY)
+
+        self.lb = lb = wx.ComboBox(panel, value=LName, choices=locs.values(), style=wx.CB_READONLY)
         lb.Bind(wx.EVT_COMBOBOX, self.LocSelect, id=lb.GetId())
 
         #Stations info
         print 'Create Stations info'
         stl = wx.StaticText(panel, label=' Stations ')
         stns = Stations(lid)
-        stns1 = zip(*stns)
         if sid:
-            SName = stns1[1][stns1[0].index(sid)]
+            SName = stns[sid]
         else:
             SName = " "
-        self.sb = sb = wx.ComboBox(panel, -1, value=SName, choices=stns1[1], style=wx.CB_READONLY)
+
+        self.sb = sb = wx.ComboBox(panel, -1, value=SName, choices=stns.values(), style=wx.CB_READONLY)
         sb.Bind(wx.EVT_COMBOBOX, self.StaSelect, id=sb.GetId())
 
         # Set up Vertical box
@@ -308,32 +185,19 @@ class ConfigWindow(wx.Dialog):
         vbox.Add(hbox2, flag=wx.EXPAND|wx.LEFT|wx.RIGHT|wx.TOP, border=10)
         vbox.Add((-1, 10))
 
-
-        #Serial Ports Info
-        pt = wx.StaticText(panel, label=' Available Serial Ports ')
-        pl = serial_ports()
-        self.pb = pb = wx.ComboBox(panel, -1, value=" ", choices=pl, style=wx.CB_READONLY)
-        pb.Bind(wx.EVT_COMBOBOX, self.PortSelect, id=pb.GetId())
-
-
-        # Set up Serial Ports Box
-        hbox3 = wx.BoxSizer(wx.HORIZONTAL)
-        hbox3.Add(pt, 1 , flag=wx.RIGHT, border=8)
-        hbox3.Add(pb, 1 , flag=wx.RIGHT, border=8)
-        vbox.Add(hbox3, flag=wx.EXPAND|wx.LEFT|wx.RIGHT|wx.TOP, border=10)
-        vbox.Add((-1, 10))
-
-
+        # User Info 
         hbox4 = wx.BoxSizer(wx.HORIZONTAL)
 
-        st1 = wx.StaticText(panel, label='Reading ports...')
-        hbox4.Add(st1, 1 , flag=wx.RIGHT, border=8)
-        self.tc = tc = wx.StaticText(panel, label='....')
-        hbox4.Add(tc, proportion=1, border=10)
-        vbox.Add(hbox4, flag=wx.EXPAND|wx.LEFT|wx.RIGHT|wx.TOP, border=10)
-        vbox.Add((-1, 10))
+        user1 = wx.StaticText(panel, label='User Name: ')
+        hbox4.Add(user1, 1, flag = wx.RIGHT, border = 8)
+        self.user2 = user2 = wx.StaticText(panel, label = ' Waiting for DB...')
+        hbox4.Add(user2, proportion = 1, border = 10)
+        vbox.Add(hbox4, flag=wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, border = 10)
+        vbox.Add((-1,10))
 
+        # Control buttons
         hbox5 = wx.BoxSizer(wx.HORIZONTAL)
+
         btn1 = wx.Button(panel, label='Save', size=(70, 30))
         hbox5.Add(btn1)
         self.btn2 = btn2 = wx.Button(panel, label='Close', size=(70, 30))
@@ -365,44 +229,47 @@ class ConfigWindow(wx.Dialog):
         global lid, LName
         item = event.GetSelection()
         LName = event.GetString()
+        print LName
         locs = Locations()
-        locs = zip(*locs)
-        lid = locs[0][item]
+        lid = locs.keys()[item]
+        # locs = zip(*locs)
+        # lid = locs[0][item]
         # LName = locs[1][item]
 
         stns = Stations(lid)
-        stns1 = zip(*stns)
+        # stns1 = zip(*stns)
         self.sb.Clear()
-        self.sb.SetItems(stns1[1])
+        self.sb.SetItems(stns.values())
         print 'Location selected'
 
     def StaSelect(self, event):
         global lid, sid, SName
         item = event.GetSelection()
         SName = event.GetString()
+        print SName
         stns = Stations(lid)
-        stns = zip(*stns)
-        sid = stns[0][item]
+        # stns = zip(*stns)
+        sid = stns.keys()[item]
         # SName = stns[1][item]
         print 'Station selected'
+        # self.CheckConnection()
+        self.ConfigTimer.Start(2000)
 
-    def PortSelect(self, event):
-        global ser
-        print 'Port selected'
-        port = event.GetString()
-        print 'starting timer'
-        ser = serial.Serial(port, 9600) #, timeout=.1)
-        self.ConfigTimer.Start(5000)
+    def CheckConnection(self, event):
+        global sid
+        print " Checking connection "
 
-    def ReadPort(self,event):
-        data = GetData()
-        if data:
+        CurrUser = CheckUser(sid)
+        print CurrUser['uname']
+        if CurrUser['uname']:
             self.btn2.Enable(True)
-            self.tc.SetLabel(data)
-        else:   # Flush and reread the serial port
+            self.user2.SetLabel(CurrUser['uname'])
+        else:
             self.btn2.Enable(False)
             self.tc.SetLabel('Improper data format')
-        
+
+ 
+
 class Interlock(wx.Frame):
     
     def __init__(self, parent):
@@ -415,12 +282,21 @@ class Interlock(wx.Frame):
         self.InitUI()
         print 'Initial Configuring...'
         self.SetWindowStyle(~wx.STAY_ON_TOP)
+
+        # if self.cfg.Exists('Location'):
+        #     lid, sid = self.cfg.ReadInt('Location'), self.cfg.ReadInt('Station')
+        #     # LName, SName = self.cfg.ReadInt('LocName'), self.cfg.ReadInt('StaName')
+        #     print lidÔ
+        #     print sid
+        #     # print LName
+        #     # print SName
         CFig = ConfigWindow(self, title='Configure Computer Interlock')
         CFig.ShowModal()
         CFig.Destroy()
+
         self.SetWindowStyle(wx.STAY_ON_TOP)
         self.SetFocus()
-        self.MainTimer.Start(2500)
+        self.MainTimer.Start(1000)
 
     def InitDisplay(self):
         global X, Y
@@ -428,8 +304,8 @@ class Interlock(wx.Frame):
         print displaySize
         X = displaySize[0]
         Y = displaySize[1]
-        W = X * 0.9
-        H = Y * 0.9
+        W = X * 1.01
+        H = Y * 1.01
         self.SetSize((W,H))
 
         self.SetBackgroundColour('#c6bfb6')
@@ -507,154 +383,97 @@ class Interlock(wx.Frame):
         self.Close()
 
 
-    def ILock(self, status, WText, AText): #Either locks or unlocks the window
-        global X, Y
-        print ''
-        # self.Freeze()
+    def SetText(self, WText, AText):
         self.SetFocus()
         self.WTxt.SetLabel(WText)
         self.ATxt.SetLabel(AText)
         self.MBox.Layout()
-        # self.Freeze()
+
+    def ILock(self, status):
+        global X, Y, access
         if status:        
             # self.SetTransparent(100)
             print ' Unlocking the screen '
-            time.sleep(3)
-            self.Freeze()
-            self.SetWindowStyle(~wx.STAY_ON_TOP)
-            dX = X * .75
-            dY = Y * .75
-            # self.MoveXY(dX,dY)
-            self.MoveXY(X,Y)
-            self.Thaw()
+            if not access:
+                print 'Delaying a few seconds for viewing'
+                # self.MainTimer.Stop()
+                # time.sleep(2)
+                # self.MainTimer.Start(1000)
+            elif access:  
+                self.Freeze()
+                self.SetWindowStyle(~wx.STAY_ON_TOP)
+                # dX = X * .75
+                # dY = Y * .75
+                # self.Move(dX,dY)
+                self.MoveXY(X,Y)
+                self.Thaw()
         elif not status:
             print ' Locking the screen '
             self.Freeze()
             self.Centre()
-            # self.Raise()
-            # self.SetTransparent(200)
             self.SetWindowStyle(wx.STAY_ON_TOP)
-            # dX = X * 0.05
-            # dY = Y * 0.05
-            # self.MoveXY(dX,dY)
             self.Thaw()
-        # self.Thaw()
+            self.SetFocus()
 
     def UserCheck(self,event):
-        global ser, RFID, user, access, LName, SName
+        global sid, UName, user, access, LName, SName
 
-        print 'begin of user check '
+        # print ' user checking for user... '
 
-        if not user:
-            print 'No current user'
-            # Check the serial port for an RFID
-            self.SetFocus()
-            data = GetData()
-            print 'UserCheck: ' + data
+        # Check for change in user
+        UInfo = CheckUser(sid)
+        # print 'UserCheck: ' + str(UInfo)
+        self.SetFocus()
 
-            if data[5] != '#':  # Then there is still no user
-                print 'No new RFID '
-                self.ILock(False, (" Welcome to " + LName) , (" The " + SName + "Station") # Reset the lock 
-                user = False    # Reaffirm no user in place
-            elif data[5] == '#': 
-                user = True                 # There's a user now
-                self.UserTimer.Start()      # Start the usage timer
-                rfid = data[6:14]           # Grab the RFID hex string
-                RFID = rfid                 # Keep global copy of the RFID
-                uid, fname = GetUID(rfid)   # Check for uid and username
+        # {'access': 'True', 'uname': 'dolanwill', 'email': 'dolanwill@gmail.com', 'fname': 'Will'}
+        # {'access': 'False', 'uname': 'null', 'email': 'null@null.com', 'fname': 'null'}
 
-                if uid == 0:    # No user in database
-                    self.ILock(False, " No user in database ", " Please check with Administrator ")  # refresh the computer lock
-                    access = None
-                    return
-                elif uid >0:    # Valid user in the database            
-                    access = CheckAccess(uid)   # Check the access status of the RFID
-                    # Lock or unlock based on access
-                    if access:
-                        WText = "Welcome " + fname
-                        AText = " Access granted "
-                        self.ILock(True, WText, AText)
-                    elif access is None:
-                        WText = "Welcome " + fname
-                        AText = "No Permission Status in System. Contact Admin."
-                        self.ILock(False, WText, AText)
-                    elif access is False:
-                        WText = "Welcome " + fname
-                        AText = "Further Training Required. Contact Admin."
-                        self.ILock(False, WText, AText)
-                    else:
-                        WText = "Welcome " + fname
-                        AText = "Some Error Occured."
-                        self.ILock(False, WText, AText)
+        ACCESS = ast.literal_eval(UInfo['access']) 
+        uname = UInfo['uname']
+        FName = UInfo['fname']
 
-        elif user:
-            print 'A user is logged'
-            print 'begin of user check '
-            self.SetFocus()
-            data = GetData()
-            print 'UserCheck: ' + data
-            rfid = data[6:14]           # Grab the RFID hex string
-            uid, fname = GetUID(rfid)   # Check for uid and username
-
-            if rfid == RFID:
-                # If there's no change in users, reaffirm locked statuses
-                if access is None:
-                    WText = "Welcome " + fname
-                    AText = "No Permission Status in System. Contact Admin."
-                    self.ILock(False, WText, AText)
-                elif access is False:
-                    WText = "Welcome " + fname
-                    AText = "Further Training Required. Contact Admin."
-                    self.ILock(False, WText, AText)
-            else:
-                # If there's been a change then relock the system and change user status
-                user = False
-                # Record the time of use
-                msec = self.UserTimer.Time()
-                self.UserTimer.Pause()
-                sec = int(msec)/1000
-                print 'Use Time: ' + str(sec) + ' sec'
-                self.ILock(False, (" Welcome to " + LName) , (" The " + SName + "Station")
-
+        if not ACCESS and uname == 'null':
+            print 'No new user'
+            WText = " Welcome to " + LName
+            AText = " Station: " + SName
+            self.SetText(WText, AText)
+            self.ILock(False) # Refresh the Lock
+            access = False
+        elif not ACCESS and uname != 'null':
+            print 'User but insufficient credentials'
+            WText = " Welcome " + FName
+            AText = " Sorry, but more training necessary "
+            self.SetText(WText, AText)
+            self.ILock(False) # Refresh the Lock
+            access = False
+        elif ACCESS:
+            print 'User and sufficient credentials'
+            WText = " Welcome " + FName
+            AText = " Enjoy Making today "
+            self.SetText(WText, AText)
+            self.ILock(True) # Refresh the Lock
+            access = True
 
 
     def EUnLock(self, event):
-        global X, Y
+        global access
         print 'unlocking manually'
-        WText = " Manually Unlocked "
-        AText = " Manually Unlocked "
-        self.ILock(True, " WText ", " AText ")
-        # n = self.GetId()
-        # print 'self Id - ' + str(n)
-        # self.SetFocus()
-        # self.WTxt.SetLabel(' Unlocked ')
-        # self.ATxt.SetLabel(' Unlocked ')
-        # # self.Lower()
-        # self.SetTransparent(127)
-        # # self.SetWindowStyle(~wx.STAY_ON_TOP)
-        # # dX = X * .5
-        # # dY = Y * .5
-        # # self.MoveXY(dX,dY)
-        # # time.sleep(5)
+        WText = " Manually Unlocking "
+        AText = " Manually Unlocking "
+        self.SetText(WText, AText)
+        self.MainTimer.Stop()
+        access = True
+        self.ILock(True)
 
     def ELock(self, event):
-        global X, Y
+        global access
         print 'locking manually'
         WText = " Manually locked "
         AText = " Manually locked "
-        self.ILock(True, " WText ", " AText ")
-        # n = self.GetId()
-        # print 'self Id - ' + str(n)
-        # self.SetFocus()
-        # self.WTxt.SetLabel(' Locked ')
-        # self.ATxt.SetLabel(' Locked ')
-        # self.Centre()
-        # # self.Raise()
-        # self.SetTransparent(255)
-        # # self.SetWindowStyle(wx.STAY_ON_TOP)
-        # # dX = X * 0.05
-        # # dY = Y * 0.05
-        # # self.MoveXY(X,Y)
+        self.SetText(WText, AText)
+        self.MainTimer.Start(2500)
+        self.ILock(False)
+        access = False
 
 
 
