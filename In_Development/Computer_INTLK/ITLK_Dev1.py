@@ -420,10 +420,83 @@ class Interlock(wx.Frame):
 
         # print ' user checking for user... '
 
+<<<<<<< HEAD
         # Check for change in user
         UInfo = CheckUser(sid)
         # print 'UserCheck: ' + str(UInfo)
         self.SetFocus()
+=======
+        if not user:
+            print 'No current user'
+            # Check the serial port for an RFID
+            self.SetFocus()
+            data = GetData()
+            print 'UserCheck: ' + data
+
+            if data[5] != '#':  # Then there is still no user
+                print 'No new RFID '
+                self.ILock(False, (" Welcome to " + LName) , (" The " + SName + "Station")) # Reset the lock 
+                user = False    # Reaffirm no user in place
+            elif data[5] == '#': 
+                user = True                 # There's a user now
+                self.UserTimer.Start()      # Start the usage timer
+                rfid = data[6:14]           # Grab the RFID hex string
+                RFID = rfid                 # Keep global copy of the RFID
+                uid, fname = GetUID(rfid)   # Check for uid and username
+
+                if uid == 0:    # No user in database
+                    self.ILock(False, " No user in database ", " Please check with Administrator ")  # refresh the computer lock
+                    access = None
+                    return
+                elif uid >0:    # Valid user in the database            
+                    access = CheckAccess(uid)   # Check the access status of the RFID
+                    # Lock or unlock based on access
+                    if access:
+                        WText = "Welcome " + fname
+                        AText = " Access granted "
+                        self.ILock(True, WText, AText)
+                    elif access is None:
+                        WText = "Welcome " + fname
+                        AText = "No Permission Status in System. Contact Admin."
+                        self.ILock(False, WText, AText)
+                    elif access is False:
+                        WText = "Welcome " + fname
+                        AText = "Further Training Required. Contact Admin."
+                        self.ILock(False, WText, AText)
+                    else:
+                        WText = "Welcome " + fname
+                        AText = "Some Error Occured."
+                        self.ILock(False, WText, AText)
+
+        elif user:
+            print 'A user is logged'
+            print 'begin of user check '
+            self.SetFocus()
+            data = GetData()
+            print 'UserCheck: ' + data
+            rfid = data[6:14]           # Grab the RFID hex string
+            uid, fname = GetUID(rfid)   # Check for uid and username
+
+            if rfid == RFID:
+                # If there's no change in users, reaffirm locked statuses
+                if access is None:
+                    WText = "Welcome " + fname
+                    AText = "No Permission Status in System. Contact Admin."
+                    self.ILock(False, WText, AText)
+                elif access is False:
+                    WText = "Welcome " + fname
+                    AText = "Further Training Required. Contact Admin."
+                    self.ILock(False, WText, AText)
+            else:
+                # If there's been a change then relock the system and change user status
+                user = False
+                # Record the time of use
+                msec = self.UserTimer.Time()
+                self.UserTimer.Pause()
+                sec = int(msec)/1000
+                print 'Use Time: ' + str(sec) + ' sec'
+                self.ILock(False, (" Welcome to " + LName) , (" The " + SName + "Station"))
+>>>>>>> 54440c57937e5dd3b2bc6368c980727cea4ee92e
 
         # {'access': 'True', 'uname': 'dolanwill', 'email': 'dolanwill@gmail.com', 'fname': 'Will'}
         # {'access': 'False', 'uname': 'null', 'email': 'null@null.com', 'fname': 'null'}
